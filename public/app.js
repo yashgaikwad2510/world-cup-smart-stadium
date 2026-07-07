@@ -24,6 +24,7 @@ const concessionContainer = document.getElementById('concessionStatusContainer')
 const emergencyToggle = document.getElementById('emergencyToggle');
 const emergencyBanner = document.getElementById('emergencyBanner');
 const dismissEmergency = document.getElementById('dismissEmergency');
+const srAnnouncer = document.getElementById('srAnnouncer');
 
 // ============================================================
 // INITIALIZATION
@@ -42,6 +43,14 @@ document.addEventListener('DOMContentLoaded', () => {
   emergencyToggle.addEventListener('click', handleEmergencyToggle);
   if (dismissEmergency) dismissEmergency.addEventListener('click', handleEmergencyToggle);
 
+  // Keyboard accessibility
+  userInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      userInput.value = '';
+      announceToScreenReader('Input cleared');
+    }
+  });
+
   // Delegation for chips & accessibility buttons
   document.addEventListener('click', (e) => {
     const chip = e.target.closest('.chip');
@@ -53,6 +62,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // GSAP Entrance Animations
   runGSAPEntranceAnimations();
 });
+
+// ============================================================
+// SCREEN READER ANNOUNCER
+// ============================================================
+function announceToScreenReader(message) {
+  if (srAnnouncer) {
+    srAnnouncer.textContent = message;
+    // Clear after a bit so repeating same message works
+    setTimeout(() => { srAnnouncer.textContent = ''; }, 3000);
+  }
+}
 
 // ============================================================
 // GSAP ENTRANCE ANIMATIONS
@@ -70,7 +90,6 @@ function runGSAPEntranceAnimations() {
     x: -30, opacity: 0, duration: 0.5, ease: "power2.out"
   }, "-=0.4");
 
-  // Stagger sidebar widgets (using fromTo to guarantee end state)
   tl.fromTo(".sidebar-widget", 
     { y: 20, opacity: 0 },
     { y: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: "power2.out" },
@@ -90,7 +109,6 @@ function runGSAPEntranceAnimations() {
 // MATCH COUNTDOWN TIMER
 // ============================================================
 function startMatchCountdown() {
-  // Simulate a kickoff 1.5 hours from now
   const kickoffTime = new Date();
   kickoffTime.setHours(kickoffTime.getHours() + 1);
   kickoffTime.setMinutes(kickoffTime.getMinutes() + 30);
@@ -114,11 +132,8 @@ function startMatchCountdown() {
       matchTimer.textContent = 'LIVE NOW';
       matchTimer.style.color = '#f87171';
 
-      // Pulse animation on LIVE
       if (typeof gsap !== 'undefined') {
-        gsap.to(matchTimer, {
-          scale: 1.05, duration: 0.5, yoyo: true, repeat: -1, ease: "power1.inOut"
-        });
+        gsap.to(matchTimer, { scale: 1.05, duration: 0.5, yoyo: true, repeat: -1, ease: "power1.inOut" });
       }
       return;
     }
@@ -131,7 +146,6 @@ function startMatchCountdown() {
     cdMinutes.textContent = String(minutes).padStart(2, '0');
     cdSeconds.textContent = String(seconds).padStart(2, '0');
 
-    // Pulse seconds digit
     if (typeof gsap !== 'undefined') {
       gsap.fromTo(cdSeconds, { scale: 1.1 }, { scale: 1, duration: 0.3, ease: "power1.out" });
     }
@@ -145,13 +159,11 @@ function initHeatmapColors() {
   const zones = document.querySelectorAll('.heatmap-zone[data-density]');
   zones.forEach(zone => {
     const density = parseInt(zone.getAttribute('data-density'));
-    if (density === 0) return; // pitch cell
+    if (density === 0) return;
 
-    // Grayscale opacity based on density (higher = brighter/more opaque)
     const opacity = Math.max(0.05, density / 100 * 0.7);
     zone.style.background = `rgba(255, 255, 255, ${opacity})`;
 
-    // Color the percentage text based on severity
     const pctEl = zone.querySelector('.zone-pct');
     if (pctEl) {
       if (density >= 80) pctEl.style.color = '#f87171';
@@ -160,13 +172,11 @@ function initHeatmapColors() {
     }
   });
 
-  // Simulate live density updates every 8 seconds
   setInterval(() => {
     zones.forEach(zone => {
       const baseDensity = parseInt(zone.getAttribute('data-density'));
       if (baseDensity === 0) return;
 
-      // Fluctuate ±5%
       const fluctuation = Math.floor(Math.random() * 11) - 5;
       const newDensity = Math.max(10, Math.min(99, baseDensity + fluctuation));
 
@@ -179,7 +189,6 @@ function initHeatmapColors() {
         else pctEl.style.color = '#d4d4d4';
       }
 
-      // Smooth transition
       if (typeof gsap !== 'undefined') {
         gsap.to(zone, { background: `rgba(255, 255, 255, ${opacity})`, duration: 1, ease: "power1.inOut" });
       } else {
@@ -199,6 +208,7 @@ function handleEmergencyToggle() {
     emergencyToggle.classList.add('active');
     emergencyBanner.classList.remove('hidden');
     document.body.style.borderTop = '3px solid #ef4444';
+    announceToScreenReader('Emergency mode activated. Evacuation information displayed.');
 
     if (typeof gsap !== 'undefined') {
       gsap.from(emergencyBanner, { height: 0, opacity: 0, duration: 0.4, ease: "power2.out" });
@@ -218,6 +228,7 @@ function handleEmergencyToggle() {
     emergencyToggle.classList.remove('active');
     emergencyBanner.classList.add('hidden');
     document.body.style.borderTop = 'none';
+    announceToScreenReader('Emergency mode deactivated.');
     appendMessage('bot', null, {
       type: 'standard',
       title: null,
@@ -242,7 +253,6 @@ async function fetchStadiumData() {
     renderConcessionStatus(data.concessions);
   } catch (error) {
     console.error('Error fetching stadium status data:', error);
-    // Fallback: render static data directly
     renderTransportStatus([
       { type: "NJ Transit Rail", station: "Lot B Station", status: "On Time", frequency: "Every 10 min", notes: "Direct to NYC Penn Station" },
       { type: "Coach USA Bus", station: "Lot A Terminal", status: "Minor Delays", frequency: "Every 15 min", notes: "Route 3 traffic" },
@@ -256,7 +266,6 @@ async function fetchStadiumData() {
   }
 }
 
-// Render Transportation Cards
 function renderTransportStatus(transports) {
   if (!transportContainer) return;
   transportContainer.innerHTML = '';
@@ -280,15 +289,8 @@ function renderTransportStatus(transports) {
     `;
     transportContainer.appendChild(card);
   });
-
-  if (typeof gsap !== 'undefined') {
-    gsap.from(transportContainer.querySelectorAll('.status-card'), {
-      opacity: 0, y: 10, stagger: 0.08, duration: 0.4, ease: "power1.out"
-    });
-  }
 }
 
-// Render Concessions Cards
 function renderConcessionStatus(concessions) {
   if (!concessionContainer) return;
   concessionContainer.innerHTML = '';
@@ -311,16 +313,10 @@ function renderConcessionStatus(concessions) {
     `;
     concessionContainer.appendChild(card);
   });
-
-  if (typeof gsap !== 'undefined') {
-    gsap.from(concessionContainer.querySelectorAll('.status-card'), {
-      opacity: 0, y: 10, stagger: 0.08, duration: 0.4, ease: "power1.out"
-    });
-  }
 }
 
 // ============================================================
-// CHAT SUBMISSION & STRUCTURED RESPONSE RENDERING
+// CHAT SUBMISSION & SSE STREAMING
 // ============================================================
 function submitQuery(query) {
   userInput.value = query;
@@ -337,7 +333,6 @@ async function handleChatSubmit(e) {
   appendMessage('user', text);
   scrollToBottom();
   
-  // Add accessibility/language annotations
   let payloadText = text;
   if (isAccessibilityActive) {
     payloadText = `[User has Accessibility Mode Active - prioritize elevators, sensory rooms, ramps, and VIP Gate C entry] ${text}`;
@@ -348,65 +343,112 @@ async function handleChatSubmit(e) {
   
   chatHistory.push({ role: 'user', content: payloadText });
   
-  const typingIndicator = appendTypingIndicator();
+  // Create a message bubble for streaming response
+  const botMessageEl = createMessageContainer('bot');
+  const contentEl = botMessageEl.querySelector('.message-content-inner');
+  const cursorEl = document.createElement('span');
+  cursorEl.className = 'typing-cursor';
+  contentEl.appendChild(cursorEl);
+  
   scrollToBottom();
+  announceToScreenReader('MetLife Assist is typing...');
   
   try {
-    const response = await fetch('/api/chat', {
+    const response = await fetch('/api/chat/stream', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages: chatHistory })
     });
     
-    typingIndicator.remove();
-    
-    if (!response.ok) throw new Error('API Response was not ok');
-    
-    const data = await response.json();
-    
-    // Try to parse structured response
-    if (data.structured) {
-      try {
-        const structured = JSON.parse(data.text);
-        appendMessage('bot', null, structured);
-        chatHistory.push({ role: 'model', content: structured.body || data.text });
-      } catch {
-        appendMessage('bot', data.text);
-        chatHistory.push({ role: 'model', content: data.text });
+    if (!response.ok) {
+      if (response.status === 429) {
+         const data = await response.json();
+         cursorEl.remove();
+         if (data.text) {
+             const structured = JSON.parse(data.text);
+             contentEl.innerHTML = renderStructuredContent(structured);
+             announceToScreenReader('Rate limit exceeded.');
+         }
+         return;
       }
-    } else {
-      appendMessage('bot', data.text);
-      chatHistory.push({ role: 'model', content: data.text });
+      throw new Error('API Response was not ok');
     }
     
-    fetchStadiumData();
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+    let done = false;
+    let fullText = '';
     
+    while (!done) {
+      const { value, done: readerDone } = await reader.read();
+      done = readerDone;
+      if (value) {
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split('\n');
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              
+              if (data.token) {
+                fullText += data.token;
+                cursorEl.remove();
+                contentEl.innerHTML = formatMarkdown(fullText) + '<span class="typing-cursor"></span>';
+                scrollToBottom();
+              }
+              
+              if (data.done) {
+                cursorEl.remove();
+                
+                // If language was detected and changed, update dropdown quietly
+                if (data.detectedLang && data.detectedLang !== currentLanguage) {
+                  currentLanguage = data.detectedLang;
+                  langSelector.value = currentLanguage;
+                }
+                
+                if (data.structured) {
+                  contentEl.innerHTML = renderStructuredContent(data.structured);
+                  if (data.structured.type) botMessageEl.classList.add(`response-${data.structured.type}`);
+                  chatHistory.push({ role: 'model', content: data.structured.body || fullText });
+                  announceToScreenReader('Message received.');
+                } else {
+                  contentEl.innerHTML = formatMarkdown(fullText);
+                  chatHistory.push({ role: 'model', content: fullText });
+                  announceToScreenReader('Message received.');
+                }
+                fetchStadiumData();
+              }
+            } catch (err) {
+              console.error('Error parsing SSE data:', err, line);
+            }
+          }
+        }
+      }
+    }
   } catch (error) {
     console.error('Error during chat request:', error);
-    typingIndicator.remove();
-    appendMessage('bot', null, {
+    cursorEl.remove();
+    contentEl.innerHTML = renderStructuredContent({
       type: 'alert',
       title: 'Connection Error',
       body: "I'm having trouble connecting to the MetLife Stadium servers. Please check your connection and try again.",
       cards: [],
       tip: null
     });
+    announceToScreenReader('Connection Error');
   }
   
   scrollToBottom();
 }
 
 // ============================================================
-// MESSAGE RENDERING (supports structured + plain text)
+// MESSAGE RENDERING
 // ============================================================
-function appendMessage(sender, text, structured = null) {
+function createMessageContainer(sender) {
   const messageDiv = document.createElement('div');
   messageDiv.className = `message ${sender}-message`;
-  
-  // Add response type class for styling
-  if (structured && structured.type) {
-    messageDiv.classList.add(`response-${structured.type}`);
-  }
+  messageDiv.style.opacity = 1;
   
   const avatarHtml = sender === 'bot' 
     ? `<div class="message-avatar"><i data-lucide="compass" class="avatar-icon"></i></div>`
@@ -414,19 +456,10 @@ function appendMessage(sender, text, structured = null) {
     
   const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   
-  let contentHtml = '';
-  
-  if (structured && sender === 'bot') {
-    // Render structured response
-    contentHtml = renderStructuredContent(structured);
-  } else if (text) {
-    contentHtml = formatMarkdown(text);
-  }
-  
   messageDiv.innerHTML = `
     ${avatarHtml}
     <div class="message-content">
-      ${contentHtml}
+      <div class="message-content-inner"></div>
       <span class="message-time">${timestamp}</span>
     </div>
   `;
@@ -434,30 +467,35 @@ function appendMessage(sender, text, structured = null) {
   chatBody.appendChild(messageDiv);
   lucide.createIcons();
 
-  // GSAP pop-in animation
   if (typeof gsap !== 'undefined') {
     gsap.fromTo(messageDiv, 
       { scale: 0.94, y: 15, opacity: 0 },
       { scale: 1, y: 0, opacity: 1, duration: 0.45, ease: "back.out(1.2)" }
     );
   }
+  return messageDiv;
 }
 
-// Render structured JSON response into rich HTML cards
+function appendMessage(sender, text, structured = null) {
+  const messageDiv = createMessageContainer(sender);
+  const contentEl = messageDiv.querySelector('.message-content-inner');
+  
+  if (structured && structured.type) {
+    messageDiv.classList.add(`response-${structured.type}`);
+  }
+  
+  if (structured && sender === 'bot') {
+    contentEl.innerHTML = renderStructuredContent(structured);
+  } else if (text) {
+    contentEl.innerHTML = formatMarkdown(text);
+  }
+}
+
 function renderStructuredContent(data) {
   let html = '';
+  if (data.title) html += `<div class="response-title">${data.title}</div>`;
+  if (data.body) html += formatMarkdown(data.body);
   
-  // Title
-  if (data.title) {
-    html += `<div class="response-title">${data.title}</div>`;
-  }
-  
-  // Body text (markdown formatted)
-  if (data.body) {
-    html += formatMarkdown(data.body);
-  }
-  
-  // Data cards
   if (data.cards && data.cards.length > 0) {
     html += '<div class="response-cards">';
     data.cards.forEach(card => {
@@ -474,39 +512,8 @@ function renderStructuredContent(data) {
     html += '</div>';
   }
   
-  // Tip
-  if (data.tip) {
-    html += `<div class="response-tip">${data.tip}</div>`;
-  }
-  
+  if (data.tip) html += `<div class="response-tip">${data.tip}</div>`;
   return html;
-}
-
-// Typing Indicator
-function appendTypingIndicator() {
-  const indicatorDiv = document.createElement('div');
-  indicatorDiv.className = 'message bot-message typing-container';
-  indicatorDiv.innerHTML = `
-    <div class="message-avatar"><i data-lucide="compass" class="avatar-icon"></i></div>
-    <div class="message-content">
-      <div class="typing-indicator">
-        <span class="typing-dot"></span>
-        <span class="typing-dot"></span>
-        <span class="typing-dot"></span>
-      </div>
-    </div>
-  `;
-  chatBody.appendChild(indicatorDiv);
-  lucide.createIcons();
-
-  if (typeof gsap !== 'undefined') {
-    gsap.fromTo(indicatorDiv, 
-      { scale: 0.94, y: 10, opacity: 0 },
-      { scale: 1, y: 0, opacity: 1, duration: 0.3, ease: "power1.out" }
-    );
-  }
-
-  return indicatorDiv;
 }
 
 function scrollToBottom() {
@@ -578,6 +585,7 @@ function handleAccessibilityToggle() {
     accessibilityPanel.classList.remove('hidden');
     accessibilityHeaderBanner.classList.remove('hidden');
     
+    announceToScreenReader('Accessibility Mode Active. Accessible routes will be prioritized.');
     appendMessage('bot', null, {
       type: 'navigation',
       title: '♿ Accessibility Assist Active',
@@ -597,6 +605,8 @@ function handleAccessibilityToggle() {
     accessibilityToggle.classList.remove('active');
     accessibilityPanel.classList.add('hidden');
     accessibilityHeaderBanner.classList.add('hidden');
+    
+    announceToScreenReader('Accessibility Mode Disabled.');
     appendMessage('bot', null, {
       type: 'standard',
       title: null,
