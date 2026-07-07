@@ -1,0 +1,23 @@
+[
+  {
+    "section": "112",
+    "name": "Goalpost Tacos & Nachos",
+    "level": "Lower Bowl",
+    "waitTimeMinutes": 12,
+    "popularItem": "El Tri Carne Asada Nachos"
+  },
+  {
+    "section": "224",
+    "name": "Champions Club Burgers",
+    "level": "Club Level",
+    "waitTimeMinutes": 5,
+    "popularItem": "Trophy Double Cheeseburger"
+  },
+  {
+    "section": "318",
+    "name": "Strikers Hot Dogs & Brew",
+    "level": "Upper Bowl",
+    "waitTimeMinutes": 20,
+    "popularItem": "Footlong Jersey Dog"
+  }
+]

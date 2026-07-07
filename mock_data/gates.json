@@ -1,0 +1,23 @@
+[
+  {
+    "gate": "Gate A (North)",
+    "status": "High Traffic",
+    "congestion": "Heavy",
+    "waitTimeMinutes": 35,
+    "notes": "Recommend using Gate B or C if possible."
+  },
+  {
+    "gate": "Gate B (South)",
+    "status": "Medium Traffic",
+    "congestion": "Moderate",
+    "waitTimeMinutes": 15,
+    "notes": "Moving steadily."
+  },
+  {
+    "gate": "Gate C (East)",
+    "status": "VIP & Accessible Only",
+    "congestion": "Low",
+    "waitTimeMinutes": 5,
+    "notes": "Prioritized for wheelchair access and VIP guests."
+  }
+]

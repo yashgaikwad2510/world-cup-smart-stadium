@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MetLife Assist | FIFA World Cup 2026 Fan Copilot</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- App Container -->
+  <div class="app-container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="fwc-badge">FIFA 26</div>
+        <div class="brand-info">
+          <h1>MetLife Assist</h1>
+          <span class="sub-brand">Official Fan Copilot • MetLife Stadium</span>
+        </div>
+      </div>
+      
+      <div class="header-controls">
+        <!-- Language Selector -->
+        <div class="control-group">
+          <i data-lucide="languages" class="icon-sm"></i>
+          <select id="langSelector" aria-label="Select Language">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="hi">हिन्दी</option>
+            <option value="ar">العربية</option>
+          </select>
+        </div>
+
+        <!-- Accessibility Mode Toggle -->
+        <button id="accessibilityToggle" class="btn-icon" title="Toggle Accessibility Options" aria-label="Accessibility Options">
+          <i data-lucide="accessibility" class="icon-md"></i>
+          <span class="btn-text">Accessible Assist</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="main-layout">
+      <!-- Sidebar Navigation / Live Status Dashboard -->
+      <aside class="sidebar" aria-label="Stadium Live Status Dashboard">
+        
+        <!-- Live Indicator -->
+        <div class="live-status-header">
+          <span class="live-pulse"></span>
+          <h2>LIVE STADIUM STATUS</h2>
+        </div>
+
+        <!-- Stadium Map Widget -->
+        <section class="sidebar-widget widget-map">
+          <h3>
+            <i data-lucide="map-pin" class="icon-accent"></i>
+            Stadium Map Overview
+          </h3>
+          <div class="stadium-radial-container">
+            <div class="stadium-radial">
+              <div class="ring upper-bowl" data-label="300 Level (Upper Bowl)">
+                <div class="ring club-level" data-label="200 Level (Club Level)">
+                  <div class="ring lower-bowl" data-label="100 Level (Lower Bowl)">
+                    <div class="stadium-pitch">
+                      <span class="pitch-text">PITCH</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Interactive Indicators on Map -->
+              <div class="map-pointer gate-a" data-tooltip="Gate A (North): High Congestion">A</div>
+              <div class="map-pointer gate-b" data-tooltip="Gate B (South): Medium Congestion">B</div>
+              <div class="map-pointer gate-c accessible" data-tooltip="Gate C (East): Accessible Gate - Low Congestion">C</div>
+              <div class="map-pointer sensory-room" data-tooltip="Sensory Room (Sec 212)">★</div>
+            </div>
+          </div>
+          <div class="map-legend">
+            <span><span class="legend-dot green"></span>Low Traffic</span>
+            <span><span class="legend-dot yellow"></span>Moderate</span>
+            <span><span class="legend-dot red"></span>Heavy</span>
+            <span><span class="legend-dot purple"></span>★ Sensory Room</span>
+          </div>
+        </section>
+
+        <!-- Live Transportation Status Widget -->
+        <section class="sidebar-widget">
+          <h3>
+            <i data-lucide="train" class="icon-accent"></i>
+            Live Transportation Status
+          </h3>
+          <div id="transportStatusContainer" class="widget-list">
+            <!-- Loading state -->
+            <div class="loading-shimmer"></div>
+          </div>
+        </section>
+
+        <!-- Concession Queue Times Widget -->
+        <section class="sidebar-widget">
+          <h3>
+            <i data-lucide="utensils" class="icon-accent"></i>
+            Concession Queue Times
+          </h3>
+          <div id="concessionStatusContainer" class="widget-list">
+            <!-- Loading state -->
+            <div class="loading-shimmer"></div>
+          </div>
+        </section>
+
+        <!-- Accessibility Quick Info Panel (Hidden by default, shown when toggle active) -->
+        <section id="accessibilityPanel" class="sidebar-widget widget-accessibility hidden">
+          <div class="accessibility-banner">
+            <i data-lucide="info" class="icon-md"></i>
+            <div>
+              <h4>Accessibility Mode Active</h4>
+              <p>Step-free routes, elevators, and sensory room locations are highlighted.</p>
+            </div>
+          </div>
+          <div class="acc-actions">
+            <button class="btn-acc-chip" data-query="List all step-free elevator locations near Section 120">♿ Near Section 120</button>
+            <button class="btn-acc-chip" data-query="How do I access the sensory room in Section 212?">★ Sensory Room Help</button>
+            <button class="btn-acc-chip" data-query="Which gate is best for wheelchair loading?">🚗 Accessible Drop-off</button>
+          </div>
+        </section>
+        
+      </aside>
+
+      <!-- Centered Chat Container -->
+      <main class="chat-wrapper">
+        
+        <!-- Accessibility Warning Banner if Accessibility mode is active -->
+        <div id="accessibilityHeaderBanner" class="accessibility-header-banner hidden">
+          <i data-lucide="accessibility" class="icon-md"></i>
+          <span>MetLife Assist is prioritizing accessible paths, ramps, elevators, and quiet zones.</span>
+        </div>
+
+        <div class="chat-container">
+          <!-- Chat Messages Body -->
+          <div class="chat-body" id="chatBody">
+            
+            <!-- Bot Greeting Message -->
+            <div class="message bot-message">
+              <div class="message-avatar">
+                <i data-lucide="bot" class="avatar-icon"></i>
+              </div>
+              <div class="message-content">
+                <p>Welcome to MetLife Stadium for the <strong>FIFA World Cup 2026</strong>! 🏟️⚽</p>
+                <p>I am <strong>MetLife Assist</strong>, your personal GenAI stadium copilot. I can guide you through the stadium gates, locate elevators, check transportation schedules, or find the concession lines with the shortest wait times.</p>
+                <p>How can I help you enjoy your match-day experience today?</p>
+                <span class="message-time">10:55 AM</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Quick Action Suggestion Chips -->
+          <div class="suggestion-chips">
+            <button class="chip" data-query="Which gate currently has the shortest line?">
+              <i data-lucide="gauge" class="chip-icon"></i> Shortest Gate Line
+            </button>
+            <button class="chip" data-query="Where is the Sensory Room located?">
+              <i data-lucide="shield-alert" class="chip-icon"></i> Sensory Room
+            </button>
+            <button class="chip" data-query="What is the fastest way to travel back to New York Penn Station?">
+              <i data-lucide="train" class="chip-icon"></i> Train Schedule
+            </button>
+            <button class="chip" data-query="Find burgers with a short wait time">
+              <i data-lucide="pizza" class="chip-icon"></i> Short Burger Lines
+            </button>
+          </div>
+
+          <!-- Chat Input Container -->
+          <footer class="chat-input-container">
+            <form id="chatForm">
+              <!-- Voice Microphone Button -->
+              <button type="button" id="voiceBtn" class="voice-btn" title="Voice assistance (Mocked)" aria-label="Voice input">
+                <span class="mic-pulse"></span>
+                <i data-lucide="mic" class="mic-icon"></i>
+              </button>
+              
+              <!-- Input Text Field -->
+              <input 
+                type="text" 
+                id="userInput" 
+                placeholder="Ask about gate wait times, elevators, concessions, transit..." 
+                autocomplete="off" 
+                required 
+              />
+              
+              <!-- Send Button -->
+              <button type="submit" id="sendBtn" class="send-btn" aria-label="Send message">
+                <i data-lucide="send" class="send-icon"></i>
+              </button>
+            </form>
+          </footer>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

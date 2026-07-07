@@ -1,0 +1,23 @@
+[
+  {
+    "type": "NJ Transit Rail",
+    "station": "Lot B Station",
+    "status": "On Time",
+    "frequency": "Every 10 minutes",
+    "notes": "Direct service to NYC Penn Station and Secaucus Junction."
+  },
+  {
+    "type": "Coach USA Bus",
+    "station": "Lot A Terminal",
+    "status": "Minor Delays",
+    "frequency": "Every 15 minutes",
+    "notes": "Traffic congestion near Route 3 eastbound."
+  },
+  {
+    "type": "Rideshare (Uber/Lyft)",
+    "station": "Lot E Rideshare Zone",
+    "status": "High Demand",
+    "frequency": "Dynamic (20-25 min wait)",
+    "notes": "Surge pricing active. Follow signs to Lot E designated pickup bays."
+  }
+]
