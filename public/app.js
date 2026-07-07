@@ -378,15 +378,20 @@ async function handleChatSubmit(e) {
     const decoder = new TextDecoder('utf-8');
     let done = false;
     let fullText = '';
+    let buffer = '';
     
     while (!done) {
       const { value, done: readerDone } = await reader.read();
       done = readerDone;
       if (value) {
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
+        buffer += decoder.decode(value, { stream: true });
         
-        for (const line of lines) {
+        // Process all complete lines in the buffer
+        let newlineIndex;
+        while ((newlineIndex = buffer.indexOf('\n')) >= 0) {
+          const line = buffer.slice(0, newlineIndex).trim();
+          buffer = buffer.slice(newlineIndex + 1);
+          
           if (line.startsWith('data: ')) {
             try {
               const data = JSON.parse(line.slice(6));
