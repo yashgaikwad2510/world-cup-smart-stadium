@@ -1,7 +1,13 @@
+// ============================================================
+// MetLife Assist — Frontend Application Controller
+// ============================================================
+
 // Global State
 let chatHistory = [];
 let isAccessibilityActive = false;
+let isEmergencyActive = false;
 let currentLanguage = 'en';
+let countdownInterval = null;
 
 // DOM Elements
 const chatBody = document.getElementById('chatBody');
@@ -15,88 +21,217 @@ const accessibilityPanel = document.getElementById('accessibilityPanel');
 const accessibilityHeaderBanner = document.getElementById('accessibilityHeaderBanner');
 const transportContainer = document.getElementById('transportStatusContainer');
 const concessionContainer = document.getElementById('concessionStatusContainer');
+const emergencyToggle = document.getElementById('emergencyToggle');
+const emergencyBanner = document.getElementById('emergencyBanner');
+const dismissEmergency = document.getElementById('dismissEmergency');
 
-// Initialize App
+// ============================================================
+// INITIALIZATION
+// ============================================================
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize Lucide Icons
   lucide.createIcons();
-  
-  // Load Widget Data
   fetchStadiumData();
-  
-  // Setup Event Listeners
+  startMatchCountdown();
+  initHeatmapColors();
+
+  // Event Listeners
   chatForm.addEventListener('submit', handleChatSubmit);
   voiceBtn.addEventListener('click', handleVoiceClick);
   langSelector.addEventListener('change', handleLanguageChange);
   accessibilityToggle.addEventListener('click', handleAccessibilityToggle);
-  
-  // Event delegation for chips & accessibility action buttons
+  emergencyToggle.addEventListener('click', handleEmergencyToggle);
+  if (dismissEmergency) dismissEmergency.addEventListener('click', handleEmergencyToggle);
+
+  // Delegation for chips & accessibility buttons
   document.addEventListener('click', (e) => {
     const chip = e.target.closest('.chip');
     const accChip = e.target.closest('.btn-acc-chip');
-    
-    if (chip) {
-      const query = chip.getAttribute('data-query');
-      submitQuery(query);
-    } else if (accChip) {
-      const query = accChip.getAttribute('data-query');
-      submitQuery(query);
-    }
+    if (chip) submitQuery(chip.getAttribute('data-query'));
+    else if (accChip) submitQuery(accChip.getAttribute('data-query'));
   });
 
-  // Run Premium GSAP Loading Animations
+  // GSAP Entrance Animations
   runGSAPEntranceAnimations();
 });
 
-// GSAP Entrance Animations
+// ============================================================
+// GSAP ENTRANCE ANIMATIONS
+// ============================================================
 function runGSAPEntranceAnimations() {
   if (typeof gsap === 'undefined') return;
 
   const tl = gsap.timeline();
 
-  // Header slides down
   tl.from(".app-header", {
-    y: -70,
-    opacity: 0,
-    duration: 0.8,
-    ease: "power4.out"
+    y: -70, opacity: 0, duration: 0.8, ease: "power4.out"
   });
 
-  // Sidebar header slides in from left
   tl.from(".live-status-header", {
-    x: -30,
-    opacity: 0,
-    duration: 0.5,
-    ease: "power2.out"
+    x: -30, opacity: 0, duration: 0.5, ease: "power2.out"
   }, "-=0.4");
 
-  // Stadium Map pointers pop out in a bouncy way
-  tl.from(".map-pointer", {
-    scale: 0,
-    opacity: 0,
-    duration: 0.5,
-    stagger: 0.08,
-    ease: "back.out(1.8)"
-  }, "-=0.3");
+  // Stagger sidebar widgets (using fromTo to guarantee end state)
+  tl.fromTo(".sidebar-widget", 
+    { y: 20, opacity: 0 },
+    { y: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: "power2.out" },
+    "-=0.3"
+  );
 
-  // Main Chat container fades and rises up
   tl.from(".chat-container", {
-    y: 35,
-    opacity: 0,
-    duration: 0.8,
-    ease: "power3.out"
-  }, "-=0.6");
+    y: 35, opacity: 0, duration: 0.8, ease: "power3.out"
+  }, "-=0.5");
 
-  // Welcome message pops in
   tl.from(".bot-message", {
-    scale: 0.95,
-    opacity: 0,
-    duration: 0.5,
-    ease: "power2.out"
+    scale: 0.95, opacity: 0, duration: 0.5, ease: "power2.out"
   }, "-=0.2");
 }
 
-// Fetch Real-time status data from server
+// ============================================================
+// MATCH COUNTDOWN TIMER
+// ============================================================
+function startMatchCountdown() {
+  // Simulate a kickoff 1.5 hours from now
+  const kickoffTime = new Date();
+  kickoffTime.setHours(kickoffTime.getHours() + 1);
+  kickoffTime.setMinutes(kickoffTime.getMinutes() + 30);
+
+  const cdHours = document.getElementById('cdHours');
+  const cdMinutes = document.getElementById('cdMinutes');
+  const cdSeconds = document.getElementById('cdSeconds');
+  const matchTimer = document.getElementById('matchTimer');
+
+  if (!cdHours || !cdMinutes || !cdSeconds) return;
+
+  countdownInterval = setInterval(() => {
+    const now = new Date();
+    const diff = kickoffTime - now;
+
+    if (diff <= 0) {
+      clearInterval(countdownInterval);
+      cdHours.textContent = '00';
+      cdMinutes.textContent = '00';
+      cdSeconds.textContent = '00';
+      matchTimer.textContent = 'LIVE NOW';
+      matchTimer.style.color = '#f87171';
+
+      // Pulse animation on LIVE
+      if (typeof gsap !== 'undefined') {
+        gsap.to(matchTimer, {
+          scale: 1.05, duration: 0.5, yoyo: true, repeat: -1, ease: "power1.inOut"
+        });
+      }
+      return;
+    }
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    cdHours.textContent = String(hours).padStart(2, '0');
+    cdMinutes.textContent = String(minutes).padStart(2, '0');
+    cdSeconds.textContent = String(seconds).padStart(2, '0');
+
+    // Pulse seconds digit
+    if (typeof gsap !== 'undefined') {
+      gsap.fromTo(cdSeconds, { scale: 1.1 }, { scale: 1, duration: 0.3, ease: "power1.out" });
+    }
+  }, 1000);
+}
+
+// ============================================================
+// CROWD DENSITY HEATMAP COLORS
+// ============================================================
+function initHeatmapColors() {
+  const zones = document.querySelectorAll('.heatmap-zone[data-density]');
+  zones.forEach(zone => {
+    const density = parseInt(zone.getAttribute('data-density'));
+    if (density === 0) return; // pitch cell
+
+    // Grayscale opacity based on density (higher = brighter/more opaque)
+    const opacity = Math.max(0.05, density / 100 * 0.7);
+    zone.style.background = `rgba(255, 255, 255, ${opacity})`;
+
+    // Color the percentage text based on severity
+    const pctEl = zone.querySelector('.zone-pct');
+    if (pctEl) {
+      if (density >= 80) pctEl.style.color = '#f87171';
+      else if (density >= 60) pctEl.style.color = '#fbbf24';
+      else pctEl.style.color = '#d4d4d4';
+    }
+  });
+
+  // Simulate live density updates every 8 seconds
+  setInterval(() => {
+    zones.forEach(zone => {
+      const baseDensity = parseInt(zone.getAttribute('data-density'));
+      if (baseDensity === 0) return;
+
+      // Fluctuate ±5%
+      const fluctuation = Math.floor(Math.random() * 11) - 5;
+      const newDensity = Math.max(10, Math.min(99, baseDensity + fluctuation));
+
+      const opacity = Math.max(0.05, newDensity / 100 * 0.7);
+      const pctEl = zone.querySelector('.zone-pct');
+      if (pctEl) {
+        pctEl.textContent = `${newDensity}%`;
+        if (newDensity >= 80) pctEl.style.color = '#f87171';
+        else if (newDensity >= 60) pctEl.style.color = '#fbbf24';
+        else pctEl.style.color = '#d4d4d4';
+      }
+
+      // Smooth transition
+      if (typeof gsap !== 'undefined') {
+        gsap.to(zone, { background: `rgba(255, 255, 255, ${opacity})`, duration: 1, ease: "power1.inOut" });
+      } else {
+        zone.style.background = `rgba(255, 255, 255, ${opacity})`;
+      }
+    });
+  }, 8000);
+}
+
+// ============================================================
+// EMERGENCY ALERT SYSTEM
+// ============================================================
+function handleEmergencyToggle() {
+  isEmergencyActive = !isEmergencyActive;
+
+  if (isEmergencyActive) {
+    emergencyToggle.classList.add('active');
+    emergencyBanner.classList.remove('hidden');
+    document.body.style.borderTop = '3px solid #ef4444';
+
+    if (typeof gsap !== 'undefined') {
+      gsap.from(emergencyBanner, { height: 0, opacity: 0, duration: 0.4, ease: "power2.out" });
+    }
+
+    appendMessage('bot', null, {
+      type: 'alert',
+      title: '⚠️ Emergency Mode Activated',
+      body: '**Emergency evacuation protocols are now displayed.** Follow illuminated exits and stadium staff directions.\n\n- **Gate C (East):** Accessible emergency exit\n- **Medical Stations:** Sections 110, 215, 318\n- **Security Hotline:** Extension 911 on courtesy phones',
+      cards: [
+        { label: 'Nearest Exit', value: 'Gate C (East)', status: 'critical' },
+        { label: 'Medical Station', value: 'Sections 110, 215, 318', status: 'warning' }
+      ],
+      tip: 'If this is a life-threatening emergency, call 911 immediately.'
+    });
+  } else {
+    emergencyToggle.classList.remove('active');
+    emergencyBanner.classList.add('hidden');
+    document.body.style.borderTop = 'none';
+    appendMessage('bot', null, {
+      type: 'standard',
+      title: null,
+      body: 'ℹ️ **Emergency mode deactivated.** Returning to normal operations.',
+      cards: [],
+      tip: null
+    });
+  }
+  scrollToBottom();
+}
+
+// ============================================================
+// FETCH STADIUM DATA FOR SIDEBAR WIDGETS
+// ============================================================
 async function fetchStadiumData() {
   try {
     const response = await fetch('/api/stadium-data');
@@ -107,18 +242,28 @@ async function fetchStadiumData() {
     renderConcessionStatus(data.concessions);
   } catch (error) {
     console.error('Error fetching stadium status data:', error);
-    transportContainer.innerHTML = `<div class="status-card"><span class="card-title">Failed to load transport updates.</span></div>`;
-    concessionContainer.innerHTML = `<div class="status-card"><span class="card-title">Failed to load concession times.</span></div>`;
+    // Fallback: render static data directly
+    renderTransportStatus([
+      { type: "NJ Transit Rail", station: "Lot B Station", status: "On Time", frequency: "Every 10 min", notes: "Direct to NYC Penn Station" },
+      { type: "Coach USA Bus", station: "Lot A Terminal", status: "Minor Delays", frequency: "Every 15 min", notes: "Route 3 traffic" },
+      { type: "Rideshare (Uber/Lyft)", station: "Lot E", status: "High Demand", frequency: "20-25 min wait", notes: "Surge pricing active" }
+    ]);
+    renderConcessionStatus([
+      { section: "112", name: "Goalpost Tacos", level: "Lower Bowl", waitTimeMinutes: 12, popularItem: "Carne Asada Nachos" },
+      { section: "224", name: "Champions Club Burgers", level: "Club Level", waitTimeMinutes: 5, popularItem: "Trophy Cheeseburger" },
+      { section: "318", name: "Strikers Hot Dogs", level: "Upper Bowl", waitTimeMinutes: 20, popularItem: "Footlong Jersey Dog" }
+    ]);
   }
 }
 
-// Render Transportation Cards in Sidebar
+// Render Transportation Cards
 function renderTransportStatus(transports) {
+  if (!transportContainer) return;
   transportContainer.innerHTML = '';
   transports.forEach(item => {
     let statusClass = 'green';
     if (item.status.toLowerCase().includes('delay')) statusClass = 'yellow';
-    if (item.status.toLowerCase().includes('suspended')) statusClass = 'red';
+    if (item.status.toLowerCase().includes('suspended') || item.status.toLowerCase().includes('high')) statusClass = 'red';
     
     const card = document.createElement('div');
     card.className = 'status-card';
@@ -128,7 +273,7 @@ function renderTransportStatus(transports) {
         <span class="status-badge ${statusClass}">${item.status}</span>
       </div>
       <div class="card-detail">
-        <span>Station: ${item.station}</span>
+        <span>${item.station}</span>
         <span>${item.frequency}</span>
       </div>
       <div class="card-subtext">${item.notes}</div>
@@ -136,20 +281,16 @@ function renderTransportStatus(transports) {
     transportContainer.appendChild(card);
   });
 
-  // Stagger animate cards on data reload
   if (typeof gsap !== 'undefined') {
     gsap.from(transportContainer.querySelectorAll('.status-card'), {
-      opacity: 0,
-      y: 10,
-      stagger: 0.08,
-      duration: 0.4,
-      ease: "power1.out"
+      opacity: 0, y: 10, stagger: 0.08, duration: 0.4, ease: "power1.out"
     });
   }
 }
 
-// Render Concessions Cards in Sidebar
+// Render Concessions Cards
 function renderConcessionStatus(concessions) {
+  if (!concessionContainer) return;
   concessionContainer.innerHTML = '';
   concessions.forEach(item => {
     let statusClass = 'green';
@@ -171,41 +312,32 @@ function renderConcessionStatus(concessions) {
     concessionContainer.appendChild(card);
   });
 
-  // Stagger animate cards on data reload
   if (typeof gsap !== 'undefined') {
     gsap.from(concessionContainer.querySelectorAll('.status-card'), {
-      opacity: 0,
-      y: 10,
-      stagger: 0.08,
-      duration: 0.4,
-      ease: "power1.out"
+      opacity: 0, y: 10, stagger: 0.08, duration: 0.4, ease: "power1.out"
     });
   }
 }
 
-// Submit a custom query (from inputs or quick-chips)
+// ============================================================
+// CHAT SUBMISSION & STRUCTURED RESPONSE RENDERING
+// ============================================================
 function submitQuery(query) {
   userInput.value = query;
   handleChatSubmit(new Event('submit'));
 }
 
-// Handle Chat Message Submission
 async function handleChatSubmit(e) {
   e.preventDefault();
   
   const text = userInput.value.trim();
   if (!text) return;
   
-  // Clear input
   userInput.value = '';
-  
-  // Append User Message to UI
   appendMessage('user', text);
-  
-  // Scroll to bottom
   scrollToBottom();
   
-  // Prepare payload with accessibility annotations if active
+  // Add accessibility/language annotations
   let payloadText = text;
   if (isAccessibilityActive) {
     payloadText = `[User has Accessibility Mode Active - prioritize elevators, sensory rooms, ramps, and VIP Gate C entry] ${text}`;
@@ -214,49 +346,67 @@ async function handleChatSubmit(e) {
     payloadText = `[User selected language: ${currentLanguage}. Respond in this language.] ${payloadText}`;
   }
   
-  // Add to internal history
   chatHistory.push({ role: 'user', content: payloadText });
   
-  // Add Typing Indicator
   const typingIndicator = appendTypingIndicator();
   scrollToBottom();
   
   try {
     const response = await fetch('/api/chat', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages: chatHistory })
     });
     
-    // Remove Typing Indicator
     typingIndicator.remove();
     
     if (!response.ok) throw new Error('API Response was not ok');
     
     const data = await response.json();
     
-    // Append Bot Message to UI
-    appendMessage('bot', data.text);
-    chatHistory.push({ role: 'model', content: data.text });
+    // Try to parse structured response
+    if (data.structured) {
+      try {
+        const structured = JSON.parse(data.text);
+        appendMessage('bot', null, structured);
+        chatHistory.push({ role: 'model', content: structured.body || data.text });
+      } catch {
+        appendMessage('bot', data.text);
+        chatHistory.push({ role: 'model', content: data.text });
+      }
+    } else {
+      appendMessage('bot', data.text);
+      chatHistory.push({ role: 'model', content: data.text });
+    }
     
-    // Reload live sensor data in background to keep widgets fresh
     fetchStadiumData();
     
   } catch (error) {
     console.error('Error during chat request:', error);
     typingIndicator.remove();
-    appendMessage('bot', "I'm sorry, I'm having trouble connecting to the MetLife Stadium servers right now. Please check your internet connection and try again.");
+    appendMessage('bot', null, {
+      type: 'alert',
+      title: 'Connection Error',
+      body: "I'm having trouble connecting to the MetLife Stadium servers. Please check your connection and try again.",
+      cards: [],
+      tip: null
+    });
   }
   
   scrollToBottom();
 }
 
-// Append Message Node to Chat Body
-function appendMessage(sender, text) {
+// ============================================================
+// MESSAGE RENDERING (supports structured + plain text)
+// ============================================================
+function appendMessage(sender, text, structured = null) {
   const messageDiv = document.createElement('div');
   messageDiv.className = `message ${sender}-message`;
+  
+  // Add response type class for styling
+  if (structured && structured.type) {
+    messageDiv.classList.add(`response-${structured.type}`);
+  }
   
   const avatarHtml = sender === 'bot' 
     ? `<div class="message-avatar"><i data-lucide="compass" class="avatar-icon"></i></div>`
@@ -264,23 +414,27 @@ function appendMessage(sender, text) {
     
   const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   
-  // Support simple markdown bold and bullet points in response text
-  const formattedText = formatMarkdown(text);
+  let contentHtml = '';
+  
+  if (structured && sender === 'bot') {
+    // Render structured response
+    contentHtml = renderStructuredContent(structured);
+  } else if (text) {
+    contentHtml = formatMarkdown(text);
+  }
   
   messageDiv.innerHTML = `
     ${avatarHtml}
     <div class="message-content">
-      ${formattedText}
+      ${contentHtml}
       <span class="message-time">${timestamp}</span>
     </div>
   `;
   
   chatBody.appendChild(messageDiv);
-  
-  // Initialize newly added icons
   lucide.createIcons();
 
-  // Premium GSAP pop-in animation for message bubbles
+  // GSAP pop-in animation
   if (typeof gsap !== 'undefined') {
     gsap.fromTo(messageDiv, 
       { scale: 0.94, y: 15, opacity: 0 },
@@ -289,7 +443,46 @@ function appendMessage(sender, text) {
   }
 }
 
-// Add typing visual placeholder
+// Render structured JSON response into rich HTML cards
+function renderStructuredContent(data) {
+  let html = '';
+  
+  // Title
+  if (data.title) {
+    html += `<div class="response-title">${data.title}</div>`;
+  }
+  
+  // Body text (markdown formatted)
+  if (data.body) {
+    html += formatMarkdown(data.body);
+  }
+  
+  // Data cards
+  if (data.cards && data.cards.length > 0) {
+    html += '<div class="response-cards">';
+    data.cards.forEach(card => {
+      const statusClass = card.status === 'good' ? 'rc-good' 
+        : card.status === 'warning' ? 'rc-warning' 
+        : card.status === 'critical' ? 'rc-critical' : '';
+      html += `
+        <div class="response-card ${statusClass}">
+          <span class="rc-label">${card.label}</span>
+          <span class="rc-value">${card.value}</span>
+        </div>
+      `;
+    });
+    html += '</div>';
+  }
+  
+  // Tip
+  if (data.tip) {
+    html += `<div class="response-tip">${data.tip}</div>`;
+  }
+  
+  return html;
+}
+
+// Typing Indicator
 function appendTypingIndicator() {
   const indicatorDiv = document.createElement('div');
   indicatorDiv.className = 'message bot-message typing-container';
@@ -316,12 +509,13 @@ function appendTypingIndicator() {
   return indicatorDiv;
 }
 
-// Scroll chat log body to the bottom
 function scrollToBottom() {
   chatBody.scrollTop = chatBody.scrollHeight;
 }
 
-// Simple Markdown parser for bold, lists, and line breaks
+// ============================================================
+// MARKDOWN PARSER
+// ============================================================
 function formatMarkdown(text) {
   let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   
@@ -333,59 +527,48 @@ function formatMarkdown(text) {
     const trimmedLine = line.trim();
     
     if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
-      if (!inList) {
-        result += '<ul>';
-        inList = true;
-      }
+      if (!inList) { result += '<ul>'; inList = true; }
       result += `<li>${trimmedLine.substring(2)}</li>`;
     } else {
-      if (inList) {
-        result += '</ul>';
-        inList = false;
-      }
-      if (trimmedLine) {
-        result += `<p>${trimmedLine}</p>`;
-      }
+      if (inList) { result += '</ul>'; inList = false; }
+      if (trimmedLine) result += `<p>${trimmedLine}</p>`;
     }
   });
   
-  if (inList) {
-    result += '</ul>';
-  }
-  
+  if (inList) result += '</ul>';
   return result || html;
 }
 
-// Handle Language selector changes
+// ============================================================
+// LANGUAGE SELECTOR
+// ============================================================
 function handleLanguageChange(e) {
   currentLanguage = e.target.value;
   
-  let notice = '';
-  switch (currentLanguage) {
-    case 'es':
-      notice = "Idioma cambiado a Español. ¡MetLife Assist responderá en español!";
-      break;
-    case 'fr':
-      notice = "Langue changée en Français. MetLife Assist répondra en français !";
-      break;
-    case 'de':
-      notice = "Sprache auf Deutsch geändert. MetLife Assist wird auf Deutsch antworten!";
-      break;
-    case 'hi':
-      notice = "भाषा बदलकर हिन्दी कर दी गई है। मेटलाइफ असिस्ट हिन्दी में जवाब देगा!";
-      break;
-    case 'ar':
-      notice = "تم تغيير اللغة إلى العربية. ستجيب خدمة MetLife Assist باللغة العربية!";
-      break;
-    default:
-      notice = "Language set to English. MetLife Assist will respond in English!";
-  }
+  const notices = {
+    'es': "Idioma cambiado a Español. ¡MetLife Assist responderá en español!",
+    'fr': "Langue changée en Français. MetLife Assist répondra en français !",
+    'de': "Sprache auf Deutsch geändert. MetLife Assist wird auf Deutsch antworten!",
+    'hi': "भाषा बदलकर हिन्दी कर दी गई है। मेटलाइफ असिस्ट हिन्दी में जवाब देगा!",
+    'ar': "تم تغيير اللغة إلى العربية. ستجيب خدمة MetLife Assist باللغة العربية!",
+    'pt': "Idioma alterado para Português. O MetLife Assist responderá em português!",
+    'ja': "言語を日本語に変更しました。MetLife Assistは日本語で応答します！",
+    'en': "Language set to English. MetLife Assist will respond in English!"
+  };
   
-  appendMessage('bot', `🌐 **System Notice:** ${notice}`);
+  appendMessage('bot', null, {
+    type: 'standard',
+    title: null,
+    body: `🌐 **System Notice:** ${notices[currentLanguage] || notices['en']}`,
+    cards: [],
+    tip: null
+  });
   scrollToBottom();
 }
 
-// Toggle Accessibility features
+// ============================================================
+// ACCESSIBILITY TOGGLE
+// ============================================================
 function handleAccessibilityToggle() {
   isAccessibilityActive = !isAccessibilityActive;
   
@@ -394,28 +577,40 @@ function handleAccessibilityToggle() {
     accessibilityToggle.classList.add('active');
     accessibilityPanel.classList.remove('hidden');
     accessibilityHeaderBanner.classList.remove('hidden');
-    appendMessage('bot', "♿ **Accessibility Assist Active:** I will now prioritize step-free paths, escalators, elevators, wheelchair entries, and our sensory room near Section 212.");
     
-    // Smooth fade in for panel
+    appendMessage('bot', null, {
+      type: 'navigation',
+      title: '♿ Accessibility Assist Active',
+      body: 'I will now prioritize step-free paths, escalators, elevators, wheelchair entries, and our sensory room near Section 212.',
+      cards: [
+        { label: 'Gate C (Accessible Entry)', value: '5 min wait — Low Traffic', status: 'good' },
+        { label: 'Sensory Room', value: 'Section 212 — Club Level', status: 'good' }
+      ],
+      tip: 'Ask me about any section for personalized accessible route guidance.'
+    });
+
     if (typeof gsap !== 'undefined') {
-      gsap.from(accessibilityPanel, {
-        height: 0,
-        opacity: 0,
-        duration: 0.4,
-        ease: "power2.out"
-      });
+      gsap.from(accessibilityPanel, { height: 0, opacity: 0, duration: 0.4, ease: "power2.out" });
     }
   } else {
     document.body.classList.remove('accessibility-active');
     accessibilityToggle.classList.remove('active');
     accessibilityPanel.classList.add('hidden');
     accessibilityHeaderBanner.classList.add('hidden');
-    appendMessage('bot', "ℹ️ **Accessibility Assist Disabled:** Returned to standard navigation paths.");
+    appendMessage('bot', null, {
+      type: 'standard',
+      title: null,
+      body: 'ℹ️ **Accessibility Assist Disabled:** Returned to standard navigation paths.',
+      cards: [],
+      tip: null
+    });
   }
   scrollToBottom();
 }
 
-// Mock Voice Recording click
+// ============================================================
+// MOCK VOICE INPUT
+// ============================================================
 function handleVoiceClick() {
   const pulseEl = voiceBtn.querySelector('.mic-pulse');
   const iconEl = voiceBtn.querySelector('.mic-icon');
@@ -429,7 +624,8 @@ function handleVoiceClick() {
     "I need a wheelchair elevator near section 112",
     "Where is the sensory room located?",
     "Which gate has the shortest wait time right now?",
-    "How do I catch the train to Penn Station?"
+    "How do I catch the train to Penn Station?",
+    "Show me the crowd density right now"
   ];
   
   const randomQuery = simulatedVoiceQueries[Math.floor(Math.random() * simulatedVoiceQueries.length)];
