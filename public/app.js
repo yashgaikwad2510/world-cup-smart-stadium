@@ -421,9 +421,9 @@ function handleVoiceClick() {
   const pulseEl = voiceBtn.querySelector('.mic-pulse');
   const iconEl = voiceBtn.querySelector('.mic-icon');
   
-  pulseEl.style.animation = 'pulse-green-glow 1.8s infinite';
+  pulseEl.style.animation = 'pulse-white-glow 1.8s infinite';
   pulseEl.style.opacity = '1';
-  iconEl.style.color = 'var(--accent-green)';
+  iconEl.style.color = 'var(--accent-white)';
   userInput.placeholder = "Listening...";
   
   const simulatedVoiceQueries = [

@@ -1,26 +1,26 @@
-/* Custom Design System variables (Strictly No Blue/Navy Colors) */
+/* Custom Design System variables (Monochrome: Whites, Charcoal, Grays) */
 :root {
-  --bg-primary: #050506;       /* Pitch black */
-  --bg-secondary: #0f0f11;     /* Ultra-dark carbon/charcoal */
-  --bg-tertiary: #19191c;      /* Elevated dark card background */
+  --bg-primary: #000000;       /* True Black */
+  --bg-secondary: #0a0a0c;     /* Dark Charcoal */
+  --bg-tertiary: #161619;      /* Elevated deep gray */
   
-  --accent-green: #00e676;     /* Glowing neon emerald green */
-  --accent-green-dim: rgba(0, 230, 118, 0.12);
-  --accent-green-glow: rgba(0, 230, 118, 0.35);
+  --accent-white: #ffffff;     /* Glowing pure white */
+  --accent-white-dim: rgba(255, 255, 255, 0.08);
+  --accent-white-glow: rgba(255, 255, 255, 0.25);
   
-  --accent-purple: #c084fc;    /* Modern neon violet/purple */
-  --accent-purple-dim: rgba(192, 132, 252, 0.12);
-  --accent-purple-glow: rgba(192, 132, 252, 0.35);
+  --accent-purple: #cccccc;    /* Light silver/gray */
+  --accent-purple-dim: rgba(204, 204, 204, 0.08);
+  --accent-purple-glow: rgba(204, 204, 204, 0.25);
 
-  --text-main: #f3f4f6;        /* Bright neutral text */
-  --text-muted: #9ca3af;       /* Soft grey text */
-  --text-dark: #111827;        /* Contrast dark text */
+  --text-main: #fcfcfc;        /* Stark white text */
+  --text-muted: #88888e;       /* Soft medium gray text */
+  --text-dark: #000000;        /* Pure black text */
   
-  --border-color: rgba(255, 255, 255, 0.06);
-  --border-glow: rgba(0, 230, 118, 0.15);
+  --border-color: rgba(255, 255, 255, 0.07);
+  --border-glow: rgba(255, 255, 255, 0.15);
   
-  --glass-bg: rgba(15, 15, 17, 0.8);
-  --glass-border: rgba(255, 255, 255, 0.04);
+  --glass-bg: rgba(10, 10, 12, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.05);
   
   --font-header: 'Outfit', sans-serif;
   --font-body: 'Plus Jakarta Sans', sans-serif;
@@ -31,15 +31,15 @@
   --radius-lg: 20px;
 }
 
-/* Accessibility Variables Overwrite (Strictly No Blue) */
+/* Accessibility Variables Overwrite (Monochrome contrast) */
 body.accessibility-active {
   --bg-primary: #000000;
-  --bg-secondary: #08080a;
-  --bg-tertiary: #151518;
-  --text-muted: #f3f4f6;
-  --border-color: rgba(255, 255, 255, 0.25);
-  --accent-green: #00ff66;
-  --accent-purple: #e9d5ff;
+  --bg-secondary: #0c0c0d;
+  --bg-tertiary: #1a1a1f;
+  --text-muted: #ffffff;
+  --border-color: rgba(255, 255, 255, 0.4);
+  --accent-white: #ffffff;
+  --accent-purple: #ffffff;
   font-size: 1.15rem;
 }
 
@@ -103,15 +103,15 @@ h1, h2, h3, h4 {
 .stadium-crest-svg {
   width: 100%;
   height: 100%;
-  color: var(--accent-green);
-  filter: drop-shadow(0 0 8px var(--accent-green-dim));
+  color: var(--text-main);
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));
 }
 
 .brand-info h1 {
   font-size: 1.45rem;
   font-weight: 800;
   line-height: 1.1;
-  background: linear-gradient(to right, #ffffff, var(--accent-green));
+  background: linear-gradient(to right, #ffffff, #88888e);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -172,15 +172,15 @@ h1, h2, h3, h4 {
 }
 
 .btn-icon:hover {
-  background: var(--accent-green-dim);
-  border-color: var(--accent-green);
-  box-shadow: 0 0 10px rgba(0, 230, 118, 0.15);
+  background: var(--accent-white-dim);
+  border-color: var(--accent-white);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
 .btn-icon.active {
-  background: var(--accent-green);
+  background: var(--accent-white);
   color: var(--bg-primary);
-  border-color: var(--accent-green);
+  border-color: var(--accent-white);
 }
 
 .btn-icon.active i {
@@ -188,7 +188,7 @@ h1, h2, h3, h4 {
 }
 
 .icon-accent {
-  color: var(--accent-green);
+  color: var(--accent-white);
 }
 
 .icon-sm {
@@ -252,10 +252,10 @@ h1, h2, h3, h4 {
 .live-pulse {
   width: 10px;
   height: 10px;
-  background-color: #22c55e;
+  background-color: #ffffff; /* Monochrome White */
   border-radius: 50%;
-  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
-  animation: pulse-green 2s infinite;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  animation: pulse-white 2s infinite;
 }
 
 /* Sidebar Widgets */
@@ -269,8 +269,8 @@ h1, h2, h3, h4 {
 }
 
 .sidebar-widget:hover {
-  border-color: rgba(0, 230, 118, 0.15);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .sidebar-widget h3 {
@@ -292,7 +292,7 @@ h1, h2, h3, h4 {
 
 /* Widget Card Items */
 .status-card {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.01);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 0.75rem 1rem;
@@ -303,8 +303,8 @@ h1, h2, h3, h4 {
 }
 
 .status-card:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .card-title-row {
@@ -328,21 +328,21 @@ h1, h2, h3, h4 {
 }
 
 .status-badge.green {
-  background: rgba(34, 197, 94, 0.12);
-  color: #4ade80;
-  border: 1px solid rgba(34, 197, 94, 0.25);
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .status-badge.yellow {
-  background: rgba(234, 179, 8, 0.12);
-  color: #facc15;
-  border: 1px solid rgba(234, 179, 8, 0.25);
+  background: rgba(255, 255, 255, 0.02);
+  color: #a3a3a3;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .status-badge.red {
-  background: rgba(239, 68, 68, 0.12);
+  background: rgba(239, 68, 68, 0.1);
   color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .card-detail {
@@ -392,26 +392,26 @@ h1, h2, h3, h4 {
 .upper-bowl {
   width: 150px;
   height: 120px;
-  border: 2px dashed rgba(192, 132, 252, 0.35); /* Purple */
+  border: 2px dashed rgba(255, 255, 255, 0.15); /* Monochrome White */
 }
 
 .club-level {
   width: 110px;
   height: 85px;
-  border: 2px dashed rgba(0, 230, 118, 0.35); /* Green */
+  border: 2px dashed rgba(255, 255, 255, 0.35); /* Bright White */
 }
 
 .lower-bowl {
   width: 75px;
   height: 55px;
-  border: 2.5px solid rgba(255, 255, 255, 0.12);
+  border: 2.5px solid rgba(255, 255, 255, 0.1);
 }
 
 .stadium-pitch {
   width: 40px;
   height: 25px;
-  background-color: rgba(34, 197, 94, 0.15);
-  border: 1.5px solid rgba(34, 197, 94, 0.5);
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
   border-radius: 4px;
   display: flex;
   justify-content: center;
@@ -420,7 +420,7 @@ h1, h2, h3, h4 {
 
 .pitch-text {
   font-size: 0.55rem;
-  color: #4ade80;
+  color: #ffffff;
   font-weight: 800;
   letter-spacing: 0.05em;
 }
@@ -445,7 +445,7 @@ h1, h2, h3, h4 {
 .map-pointer.gate-a {
   top: 10px;
   left: 76px;
-  background-color: #ef4444; /* Red */
+  background-color: #ef4444; /* High Traffic Red */
 }
 
 .map-pointer.gate-b {
@@ -457,14 +457,15 @@ h1, h2, h3, h4 {
 .map-pointer.gate-c.accessible {
   top: 61px;
   right: 10px;
-  background-color: #22c55e; /* Green */
-  border: 1.5px solid #fff;
+  background-color: #ffffff; /* White accessible gate */
+  color: #000;
+  border: 1.5px solid #000;
 }
 
 .map-pointer.sensory-room {
   top: 35px;
   right: 40px;
-  background-color: #c084fc; /* Purple */
+  background-color: #a3a3a3; /* Muted Gray */
   font-size: 0.75rem;
 }
 
@@ -512,15 +513,15 @@ h1, h2, h3, h4 {
   margin-right: 0.25rem;
 }
 
-.legend-dot.green { background: #22c55e; }
-.legend-dot.yellow { background: #eab308; }
+.legend-dot.green { background: #ffffff; }
+.legend-dot.yellow { background: #88888e; }
 .legend-dot.red { background: #ef4444; }
-.legend-dot.purple { background: #c084fc; }
+.legend-dot.purple { background: #a3a3a3; }
 
 /* Accessibility Panel Widget */
 .widget-accessibility {
-  border: 1px solid var(--accent-green);
-  background: rgba(0, 230, 118, 0.03);
+  border: 1px solid var(--accent-white);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .accessibility-banner {
@@ -531,7 +532,7 @@ h1, h2, h3, h4 {
 
 .accessibility-banner h4 {
   font-size: 0.85rem;
-  color: var(--accent-green);
+  color: var(--accent-white);
 }
 
 .accessibility-banner p {
@@ -560,8 +561,8 @@ h1, h2, h3, h4 {
 }
 
 .btn-acc-chip:hover {
-  background: var(--accent-green-dim);
-  border-color: var(--accent-green);
+  background: var(--accent-white-dim);
+  border-color: var(--accent-white);
   color: #fff;
 }
 
@@ -576,14 +577,14 @@ h1, h2, h3, h4 {
 }
 
 .accessibility-header-banner {
-  background: rgba(0, 230, 118, 0.12);
-  border-bottom: 1px solid var(--accent-green);
+  background: rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--accent-white);
   padding: 0.5rem 1.5rem;
   font-size: 0.8rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--accent-green);
+  color: var(--accent-white);
 }
 
 /* Chat Main Panel */
@@ -625,7 +626,7 @@ h1, h2, h3, h4 {
   display: flex;
   gap: 0.85rem;
   max-width: 85%;
-  opacity: 0; /* Animated with GSAP */
+  opacity: 0;
 }
 
 .bot-message {
@@ -652,14 +653,14 @@ h1, h2, h3, h4 {
 }
 
 .bot-message .message-avatar {
-  border-color: var(--accent-green-dim);
-  background: linear-gradient(135deg, var(--bg-secondary), rgba(0, 230, 118, 0.08));
+  border-color: var(--accent-white-dim);
+  background: linear-gradient(135deg, var(--bg-secondary), rgba(255, 255, 255, 0.05));
 }
 
 .avatar-icon {
   width: 18px;
   height: 18px;
-  color: var(--accent-green);
+  color: var(--accent-white);
 }
 
 .user-message .avatar-icon {
@@ -688,7 +689,7 @@ h1, h2, h3, h4 {
 }
 
 .bot-message .message-content:hover {
-  border-color: var(--accent-green);
+  border-color: var(--accent-white);
 }
 
 .message-content p {
@@ -727,7 +728,7 @@ h1, h2, h3, h4 {
 .typing-dot {
   width: 7px;
   height: 7px;
-  background-color: var(--accent-green);
+  background-color: var(--accent-white);
   border-radius: 50%;
   animation: typing-bounce 1.4s infinite ease-in-out both;
 }
@@ -769,15 +770,15 @@ h1, h2, h3, h4 {
 .chip:hover {
   background: var(--bg-tertiary);
   color: #fff;
-  border-color: var(--accent-green);
+  border-color: var(--accent-white);
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 230, 118, 0.1);
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.08);
 }
 
 .chip-icon {
   width: 14px;
   height: 14px;
-  color: var(--accent-green);
+  color: var(--accent-white);
 }
 
 /* Chat Input Footer Panel */
@@ -791,8 +792,8 @@ h1, h2, h3, h4 {
 }
 
 .chat-input-container:focus-within {
-  border-color: var(--accent-green);
-  box-shadow: 0 0 15px rgba(0, 230, 118, 0.15);
+  border-color: var(--accent-white);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
 }
 
 .chat-input-container form {
@@ -826,7 +827,7 @@ h1, h2, h3, h4 {
 }
 
 .voice-btn:hover .mic-icon {
-  color: var(--accent-green);
+  color: var(--accent-white);
 }
 
 .mic-pulse {
@@ -836,14 +837,14 @@ h1, h2, h3, h4 {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: var(--accent-green-dim);
+  background: var(--accent-white-dim);
   transform: scale(0.95);
   opacity: 0;
   transition: var(--transition-smooth);
 }
 
 .voice-btn:hover .mic-pulse {
-  animation: pulse-green-glow 1.8s infinite;
+  animation: pulse-white-glow 1.8s infinite;
   opacity: 1;
 }
 
@@ -865,7 +866,7 @@ h1, h2, h3, h4 {
 
 /* Send Button styling */
 .send-btn {
-  background: linear-gradient(135deg, var(--accent-purple), var(--accent-green));
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-white));
   border: none;
   width: 38px;
   height: 38px;
@@ -875,16 +876,16 @@ h1, h2, h3, h4 {
   align-items: center;
   cursor: pointer;
   transition: var(--transition-smooth);
-  box-shadow: 0 2px 10px rgba(0, 230, 118, 0.15);
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
 }
 
 .send-btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 15px var(--accent-green);
+  box-shadow: 0 0 15px var(--accent-white);
 }
 
 .send-icon {
-  color: #fff;
+  color: #000; /* Dark icon on white button */
   width: 16px;
   height: 16px;
   transform: translateX(1px);
@@ -893,7 +894,7 @@ h1, h2, h3, h4 {
 /* Loading Shimmer Card */
 .loading-shimmer {
   height: 60px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.01) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.01) 75%);
+  background: linear-gradient(90deg, rgba(255,255,255,0.01) 25%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.01) 75%);
   background-size: 200% 100%;
   animation: loading-shimmer 1.5s infinite;
   border-radius: var(--radius-sm);
@@ -901,16 +902,16 @@ h1, h2, h3, h4 {
 }
 
 /* CSS Keyframe Animations */
-@keyframes pulse-green {
-  0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-  70% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+@keyframes pulse-white {
+  0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6); }
+  70% { box-shadow: 0 0 0 8px rgba(255, 255, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
 }
 
-@keyframes pulse-green-glow {
-  0% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.5); transform: scale(0.95); }
-  70% { box-shadow: 0 0 0 10px rgba(0, 230, 118, 0); transform: scale(1.1); }
-  100% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); transform: scale(0.95); }
+@keyframes pulse-white-glow {
+  0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); transform: scale(0.95); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); transform: scale(1.1); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); transform: scale(0.95); }
 }
 
 @keyframes typing-bounce {
