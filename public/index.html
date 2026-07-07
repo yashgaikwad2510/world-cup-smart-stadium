@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MetLife Assist | FIFA World Cup 2026 Fan Copilot</title>
+  <title>MetLife Assist | FIFA World Cup 2026 Premium Concierge</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- GSAP Animation Library CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" href="style.css">
@@ -20,10 +22,25 @@
     <!-- Top Header -->
     <header class="app-header">
       <div class="logo-area">
-        <div class="fwc-badge">FIFA 26</div>
+        <div class="fwc-crest" aria-hidden="true">
+          <!-- Sleek minimalist top-down stadium pitch / compass SVG logo -->
+          <svg viewBox="0 0 100 100" class="stadium-crest-svg">
+            <circle cx="50" cy="50" r="45" fill="none" stroke="url(#crestGrad)" stroke-width="4" stroke-dasharray="10 5" />
+            <ellipse cx="50" cy="50" rx="32" ry="18" fill="none" stroke="url(#crestGrad)" stroke-width="3" />
+            <line x1="50" y1="5" x2="50" y2="95" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="4 4" />
+            <line x1="5" y1="50" x2="95" y2="50" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="4 4" />
+            <polygon points="50,30 57,55 43,55" fill="url(#crestGrad)" />
+            <defs>
+              <linearGradient id="crestGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#39ff14" />
+                <stop offset="100%" stop-color="#10b981" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
         <div class="brand-info">
           <h1>MetLife Assist</h1>
-          <span class="sub-brand">Official Fan Copilot • MetLife Stadium</span>
+          <span class="sub-brand">PREMIUM EVENT CONCIERGE • FIFA WORLD CUP 2026</span>
         </div>
       </div>
       
@@ -62,14 +79,14 @@
         <!-- Stadium Map Widget -->
         <section class="sidebar-widget widget-map">
           <h3>
-            <i data-lucide="map-pin" class="icon-accent"></i>
+            <i data-lucide="map" class="icon-accent"></i>
             Stadium Map Overview
           </h3>
           <div class="stadium-radial-container">
             <div class="stadium-radial">
-              <div class="ring upper-bowl" data-label="300 Level (Upper Bowl)">
-                <div class="ring club-level" data-label="200 Level (Club Level)">
-                  <div class="ring lower-bowl" data-label="100 Level (Lower Bowl)">
+              <div class="ring upper-bowl" data-label="300 Level">
+                <div class="ring club-level" data-label="200 Level">
+                  <div class="ring lower-bowl" data-label="100 Level">
                     <div class="stadium-pitch">
                       <span class="pitch-text">PITCH</span>
                     </div>
@@ -94,11 +111,10 @@
         <!-- Live Transportation Status Widget -->
         <section class="sidebar-widget">
           <h3>
-            <i data-lucide="train" class="icon-accent"></i>
+            <i data-lucide="navigation" class="icon-accent"></i>
             Live Transportation Status
           </h3>
           <div id="transportStatusContainer" class="widget-list">
-            <!-- Loading state -->
             <div class="loading-shimmer"></div>
           </div>
         </section>
@@ -110,7 +126,6 @@
             Concession Queue Times
           </h3>
           <div id="concessionStatusContainer" class="widget-list">
-            <!-- Loading state -->
             <div class="loading-shimmer"></div>
           </div>
         </section>
@@ -149,13 +164,14 @@
             <!-- Bot Greeting Message -->
             <div class="message bot-message">
               <div class="message-avatar">
-                <i data-lucide="bot" class="avatar-icon"></i>
+                <!-- Premium Compass emblem instead of robot -->
+                <i data-lucide="compass" class="avatar-icon"></i>
               </div>
               <div class="message-content">
                 <p>Welcome to MetLife Stadium for the <strong>FIFA World Cup 2026</strong>! 🏟️⚽</p>
-                <p>I am <strong>MetLife Assist</strong>, your personal GenAI stadium copilot. I can guide you through the stadium gates, locate elevators, check transportation schedules, or find the concession lines with the shortest wait times.</p>
-                <p>How can I help you enjoy your match-day experience today?</p>
-                <span class="message-time">10:55 AM</span>
+                <p>I am <strong>MetLife Assist</strong>, your premium event concierge. I can guide you through stadium gates, locate accessible elevators, check live transportation status, or find the concession lines with the shortest wait times.</p>
+                <p>How can I assist you with your match-day experience today?</p>
+                <span class="message-time">11:10 AM</span>
               </div>
             </div>
 
@@ -164,16 +180,16 @@
           <!-- Quick Action Suggestion Chips -->
           <div class="suggestion-chips">
             <button class="chip" data-query="Which gate currently has the shortest line?">
-              <i data-lucide="gauge" class="chip-icon"></i> Shortest Gate Line
+              <i data-lucide="sparkles" class="chip-icon"></i> Shortest Gate Line
             </button>
             <button class="chip" data-query="Where is the Sensory Room located?">
-              <i data-lucide="shield-alert" class="chip-icon"></i> Sensory Room
+              <i data-lucide="shield" class="chip-icon"></i> Sensory Room
             </button>
             <button class="chip" data-query="What is the fastest way to travel back to New York Penn Station?">
               <i data-lucide="train" class="chip-icon"></i> Train Schedule
             </button>
             <button class="chip" data-query="Find burgers with a short wait time">
-              <i data-lucide="pizza" class="chip-icon"></i> Short Burger Lines
+              <i data-lucide="utensils" class="chip-icon"></i> Short Burger Lines
             </button>
           </div>
 

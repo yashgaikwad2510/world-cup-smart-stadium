@@ -43,7 +43,59 @@ document.addEventListener('DOMContentLoaded', () => {
       submitQuery(query);
     }
   });
+
+  // Run Premium GSAP Loading Animations
+  runGSAPEntranceAnimations();
 });
+
+// GSAP Entrance Animations
+function runGSAPEntranceAnimations() {
+  if (typeof gsap === 'undefined') return;
+
+  const tl = gsap.timeline();
+
+  // Header slides down
+  tl.from(".app-header", {
+    y: -70,
+    opacity: 0,
+    duration: 0.8,
+    ease: "power4.out"
+  });
+
+  // Sidebar widgets slide in from left
+  tl.from(".sidebar-widget, .live-status-header", {
+    x: -50,
+    opacity: 0,
+    duration: 0.6,
+    stagger: 0.12,
+    ease: "power2.out"
+  }, "-=0.4");
+
+  // Stadium Map pointers pop out in a bouncy way
+  tl.from(".map-pointer", {
+    scale: 0,
+    opacity: 0,
+    duration: 0.5,
+    stagger: 0.08,
+    ease: "back.out(1.8)"
+  }, "-=0.3");
+
+  // Main Chat container fades and rises up
+  tl.from(".chat-container", {
+    y: 35,
+    opacity: 0,
+    duration: 0.8,
+    ease: "power3.out"
+  }, "-=0.6");
+
+  // Welcome message pops in
+  tl.from(".bot-message", {
+    scale: 0.95,
+    opacity: 0,
+    duration: 0.5,
+    ease: "power2.out"
+  }, "-=0.2");
+}
 
 // Fetch Real-time status data from server
 async function fetchStadiumData() {
@@ -56,7 +108,6 @@ async function fetchStadiumData() {
     renderConcessionStatus(data.concessions);
   } catch (error) {
     console.error('Error fetching stadium status data:', error);
-    // Display error message inside widgets
     transportContainer.innerHTML = `<div class="status-card"><span class="card-title">Failed to load transport updates.</span></div>`;
     concessionContainer.innerHTML = `<div class="status-card"><span class="card-title">Failed to load concession times.</span></div>`;
   }
@@ -85,6 +136,17 @@ function renderTransportStatus(transports) {
     `;
     transportContainer.appendChild(card);
   });
+
+  // Stagger animate cards on data reload
+  if (typeof gsap !== 'undefined') {
+    gsap.from(transportContainer.querySelectorAll('.status-card'), {
+      opacity: 0,
+      y: 10,
+      stagger: 0.08,
+      duration: 0.4,
+      ease: "power1.out"
+    });
+  }
 }
 
 // Render Concessions Cards in Sidebar
@@ -109,6 +171,17 @@ function renderConcessionStatus(concessions) {
     `;
     concessionContainer.appendChild(card);
   });
+
+  // Stagger animate cards on data reload
+  if (typeof gsap !== 'undefined') {
+    gsap.from(concessionContainer.querySelectorAll('.status-card'), {
+      opacity: 0,
+      y: 10,
+      stagger: 0.08,
+      duration: 0.4,
+      ease: "power1.out"
+    });
+  }
 }
 
 // Submit a custom query (from inputs or quick-chips)
@@ -187,7 +260,7 @@ function appendMessage(sender, text) {
   messageDiv.className = `message ${sender}-message`;
   
   const avatarHtml = sender === 'bot' 
-    ? `<div class="message-avatar"><i data-lucide="bot" class="avatar-icon"></i></div>`
+    ? `<div class="message-avatar"><i data-lucide="compass" class="avatar-icon"></i></div>`
     : `<div class="message-avatar"><i data-lucide="user" class="avatar-icon"></i></div>`;
     
   const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -207,6 +280,14 @@ function appendMessage(sender, text) {
   
   // Initialize newly added icons
   lucide.createIcons();
+
+  // Premium GSAP pop-in animation for message bubbles
+  if (typeof gsap !== 'undefined') {
+    gsap.fromTo(messageDiv, 
+      { scale: 0.94, y: 15, opacity: 0 },
+      { scale: 1, y: 0, opacity: 1, duration: 0.45, ease: "back.out(1.2)" }
+    );
+  }
 }
 
 // Add typing visual placeholder
@@ -214,7 +295,7 @@ function appendTypingIndicator() {
   const indicatorDiv = document.createElement('div');
   indicatorDiv.className = 'message bot-message typing-container';
   indicatorDiv.innerHTML = `
-    <div class="message-avatar"><i data-lucide="bot" class="avatar-icon"></i></div>
+    <div class="message-avatar"><i data-lucide="compass" class="avatar-icon"></i></div>
     <div class="message-content">
       <div class="typing-indicator">
         <span class="typing-dot"></span>
@@ -225,6 +306,14 @@ function appendTypingIndicator() {
   `;
   chatBody.appendChild(indicatorDiv);
   lucide.createIcons();
+
+  if (typeof gsap !== 'undefined') {
+    gsap.fromTo(indicatorDiv, 
+      { scale: 0.94, y: 10, opacity: 0 },
+      { scale: 1, y: 0, opacity: 1, duration: 0.3, ease: "power1.out" }
+    );
+  }
+
   return indicatorDiv;
 }
 
@@ -235,10 +324,8 @@ function scrollToBottom() {
 
 // Simple Markdown parser for bold, lists, and line breaks
 function formatMarkdown(text) {
-  // Convert double asterisks to bold
   let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   
-  // Convert newlines to paragraphs/breaks
   const lines = html.split('\n');
   let result = '';
   let inList = false;
@@ -246,7 +333,6 @@ function formatMarkdown(text) {
   lines.forEach(line => {
     const trimmedLine = line.trim();
     
-    // Check if bullet point
     if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
       if (!inList) {
         result += '<ul>';
@@ -275,7 +361,6 @@ function formatMarkdown(text) {
 function handleLanguageChange(e) {
   currentLanguage = e.target.value;
   
-  // Add notification inside chat
   let notice = '';
   switch (currentLanguage) {
     case 'es':
@@ -311,6 +396,16 @@ function handleAccessibilityToggle() {
     accessibilityPanel.classList.remove('hidden');
     accessibilityHeaderBanner.classList.remove('hidden');
     appendMessage('bot', "♿ **Accessibility Assist Active:** I will now prioritize step-free paths, escalators, elevators, wheelchair entries, and our sensory room near Section 212.");
+    
+    // Smooth fade in for panel
+    if (typeof gsap !== 'undefined') {
+      gsap.from(accessibilityPanel, {
+        height: 0,
+        opacity: 0,
+        duration: 0.4,
+        ease: "power2.out"
+      });
+    }
   } else {
     document.body.classList.remove('accessibility-active');
     accessibilityToggle.classList.remove('active');
@@ -326,13 +421,11 @@ function handleVoiceClick() {
   const pulseEl = voiceBtn.querySelector('.mic-pulse');
   const iconEl = voiceBtn.querySelector('.mic-icon');
   
-  // Visual active trigger
-  pulseEl.style.animation = 'pulse-cyan 1s infinite';
+  pulseEl.style.animation = 'pulse-green-glow 1.8s infinite';
   pulseEl.style.opacity = '1';
-  iconEl.style.color = 'var(--accent-cyan)';
+  iconEl.style.color = 'var(--accent-green)';
   userInput.placeholder = "Listening...";
   
-  // Define speech simulation options
   const simulatedVoiceQueries = [
     "I need a wheelchair elevator near section 112",
     "Where is the sensory room located?",
@@ -340,17 +433,14 @@ function handleVoiceClick() {
     "How do I catch the train to Penn Station?"
   ];
   
-  // Select random mock query
   const randomQuery = simulatedVoiceQueries[Math.floor(Math.random() * simulatedVoiceQueries.length)];
   
   setTimeout(() => {
-    // Stop recording visual
     pulseEl.style.animation = '';
     pulseEl.style.opacity = '';
     iconEl.style.color = '';
     userInput.placeholder = "Ask about gate wait times, elevators, concessions, transit...";
     
-    // Type query
     let charIndex = 0;
     userInput.value = '';
     
