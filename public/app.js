@@ -66,6 +66,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================================
 // SCREEN READER ANNOUNCER
 // ============================================================
+/**
+ * Announces a message to the screen reader using an aria-live region.
+ * @param {string} message - The message to announce.
+ */
 function announceToScreenReader(message) {
   if (srAnnouncer) {
     srAnnouncer.textContent = message;
@@ -77,6 +81,9 @@ function announceToScreenReader(message) {
 // ============================================================
 // GSAP ENTRANCE ANIMATIONS
 // ============================================================
+/**
+ * Initializes and plays the GSAP entrance animations for the application layout.
+ */
 function runGSAPEntranceAnimations() {
   if (typeof gsap === 'undefined') return;
 
@@ -108,6 +115,9 @@ function runGSAPEntranceAnimations() {
 // ============================================================
 // MATCH COUNTDOWN TIMER
 // ============================================================
+/**
+ * Starts the countdown timer for the upcoming match.
+ */
 function startMatchCountdown() {
   const kickoffTime = new Date();
   kickoffTime.setHours(kickoffTime.getHours() + 1);
@@ -155,6 +165,9 @@ function startMatchCountdown() {
 // ============================================================
 // CROWD DENSITY HEATMAP COLORS
 // ============================================================
+/**
+ * Initializes the colors and fluctuations for the crowd density heatmap widget.
+ */
 function initHeatmapColors() {
   const zones = document.querySelectorAll('.heatmap-zone[data-density]');
   zones.forEach(zone => {
@@ -201,6 +214,9 @@ function initHeatmapColors() {
 // ============================================================
 // EMERGENCY ALERT SYSTEM
 // ============================================================
+/**
+ * Toggles the emergency mode alert system.
+ */
 function handleEmergencyToggle() {
   isEmergencyActive = !isEmergencyActive;
 
@@ -243,6 +259,10 @@ function handleEmergencyToggle() {
 // ============================================================
 // FETCH STADIUM DATA FOR SIDEBAR WIDGETS
 // ============================================================
+/**
+ * Fetches real-time stadium data from the API and renders it in the sidebar.
+ * @returns {Promise<void>}
+ */
 async function fetchStadiumData() {
   try {
     const response = await fetch('/api/stadium-data');
@@ -266,6 +286,10 @@ async function fetchStadiumData() {
   }
 }
 
+/**
+ * Renders the transportation status widget with colored badges.
+ * @param {Array<Object>} transports - The array of transport data objects.
+ */
 function renderTransportStatus(transports) {
   if (!transportContainer) return;
   transportContainer.innerHTML = '';
@@ -291,6 +315,10 @@ function renderTransportStatus(transports) {
   });
 }
 
+/**
+ * Renders the concession wait times widget.
+ * @param {Array<Object>} concessions - The array of concession data objects.
+ */
 function renderConcessionStatus(concessions) {
   if (!concessionContainer) return;
   concessionContainer.innerHTML = '';
@@ -318,11 +346,20 @@ function renderConcessionStatus(concessions) {
 // ============================================================
 // CHAT SUBMISSION & SSE STREAMING
 // ============================================================
+/**
+ * Submits a query directly to the chat interface.
+ * @param {string} query - The search query to submit.
+ */
 function submitQuery(query) {
   userInput.value = query;
   handleChatSubmit(new Event('submit'));
 }
 
+/**
+ * Handles the form submission for the chat interface, sending the message to the AI.
+ * @param {Event} e - The submit event.
+ * @returns {Promise<void>}
+ */
 async function handleChatSubmit(e) {
   e.preventDefault();
   
@@ -450,6 +487,11 @@ async function handleChatSubmit(e) {
 // ============================================================
 // MESSAGE RENDERING
 // ============================================================
+/**
+ * Creates and appends a new message container to the chat body.
+ * @param {string} sender - The sender ('bot' or 'user').
+ * @returns {HTMLElement} The created message container element.
+ */
 function createMessageContainer(sender) {
   const messageDiv = document.createElement('div');
   messageDiv.className = `message ${sender}-message`;
@@ -496,6 +538,11 @@ function appendMessage(sender, text, structured = null) {
   }
 }
 
+/**
+ * Renders structured JSON data into HTML cards and tips.
+ * @param {Object} data - The structured JSON response from the AI.
+ * @returns {string} The formatted HTML string.
+ */
 function renderStructuredContent(data) {
   let html = '';
   if (data.title) html += `<div class="response-title">${data.title}</div>`;
@@ -528,6 +575,11 @@ function scrollToBottom() {
 // ============================================================
 // MARKDOWN PARSER
 // ============================================================
+/**
+ * Converts simple markdown (bold and bullet points) to HTML.
+ * @param {string} text - The markdown text.
+ * @returns {string} The parsed HTML string.
+ */
 function formatMarkdown(text) {
   let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   
@@ -554,6 +606,10 @@ function formatMarkdown(text) {
 // ============================================================
 // LANGUAGE SELECTOR
 // ============================================================
+/**
+ * Handles the language selector change event and notifies the system.
+ * @param {Event} e - The change event from the selector.
+ */
 function handleLanguageChange(e) {
   currentLanguage = e.target.value;
   
@@ -581,6 +637,9 @@ function handleLanguageChange(e) {
 // ============================================================
 // ACCESSIBILITY TOGGLE
 // ============================================================
+/**
+ * Toggles the high-contrast/accessible routing mode for the application.
+ */
 function handleAccessibilityToggle() {
   isAccessibilityActive = !isAccessibilityActive;
   
@@ -626,6 +685,9 @@ function handleAccessibilityToggle() {
 // ============================================================
 // MOCK VOICE INPUT
 // ============================================================
+/**
+ * Simulates a voice input action for demonstration purposes.
+ */
 function handleVoiceClick() {
   const pulseEl = voiceBtn.querySelector('.mic-pulse');
   const iconEl = voiceBtn.querySelector('.mic-icon');

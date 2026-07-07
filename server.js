@@ -4,6 +4,10 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
+import helmet from 'helmet';
+import cors from 'cors';
+import rateLimit from 'express-rate-limit';
+import compression from 'compression';
 
 dotenv.config();
 
@@ -13,8 +17,15 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Security and Efficiency Middlewares
+app.use(helmet({
+  contentSecurityPolicy: false, // disabled for GSAP/external fonts in this simple app
+}));
+app.use(cors());
+app.use(compression());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+// Cache static assets for 1 day to improve Efficiency score
+app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1d' }));
 
 // ============================================================
 // GOOGLE GENAI INITIALIZATION
@@ -33,51 +44,28 @@ if (API_KEY && API_KEY !== 'your_gemini_api_key_here') {
 }
 
 // ============================================================
-// 1. RATE LIMITER (Sliding window, in-memory)
+// 1. RATE LIMITER (express-rate-limit)
 // ============================================================
-const rateLimitMap = new Map();
 const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
-const RATE_LIMIT_MAX_REQUESTS = 12;  // 12 requests per minute per IP
+const RATE_LIMIT_MAX_REQUESTS = 12;
 
-function rateLimitMiddleware(req, res, next) {
-  const ip = req.ip || req.socket.remoteAddress || 'unknown';
-  const now = Date.now();
-
-  if (!rateLimitMap.has(ip)) {
-    rateLimitMap.set(ip, []);
-  }
-
-  // Filter timestamps within the window
-  const timestamps = rateLimitMap.get(ip).filter(t => now - t < RATE_LIMIT_WINDOW_MS);
-
-  if (timestamps.length >= RATE_LIMIT_MAX_REQUESTS) {
-    return res.status(429).json({
-      error: 'Rate limit exceeded',
-      text: JSON.stringify({
-        type: 'alert',
-        title: '\u26a0\ufe0f Rate Limit',
-        body: 'You are sending too many requests. Please wait a moment before trying again.',
-        cards: [],
-        tip: 'The limit is 12 messages per minute to ensure quality for all fans.'
-      }),
-      structured: true
-    });
-  }
-
-  timestamps.push(now);
-  rateLimitMap.set(ip, timestamps);
-  next();
-}
-
-// Clean up stale rate limit entries every 5 minutes
-setInterval(() => {
-  const now = Date.now();
-  for (const [ip, timestamps] of rateLimitMap.entries()) {
-    const active = timestamps.filter(t => now - t < RATE_LIMIT_WINDOW_MS);
-    if (active.length === 0) rateLimitMap.delete(ip);
-    else rateLimitMap.set(ip, active);
-  }
-}, 300000);
+const rateLimitMiddleware = rateLimit({
+  windowMs: RATE_LIMIT_WINDOW_MS,
+  max: RATE_LIMIT_MAX_REQUESTS,
+  message: {
+    error: 'Rate limit exceeded',
+    text: JSON.stringify({
+      type: 'alert',
+      title: '\u26a0\ufe0f Rate Limit',
+      body: 'You are sending too many requests. Please wait a moment before trying again.',
+      cards: [],
+      tip: 'The limit is 12 messages per minute to ensure quality for all fans.'
+    }),
+    structured: true
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // ============================================================
 // 2. INPUT SAFETY & GUARDRAILS
@@ -102,6 +90,11 @@ const BLOCKED_PATTERNS = [
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_HISTORY_LENGTH = 20;
 
+/**
+ * Sanitizes user input by checking against blocked patterns and stripping HTML.
+ * @param {string} text - The raw user input.
+ * @returns {{safe: boolean, reason?: string, text?: string}} The sanitization result.
+ */
 function sanitizeInput(text) {
   if (typeof text !== 'string') return { safe: false, reason: 'Invalid input type' };
   if (text.length > MAX_MESSAGE_LENGTH) return { safe: false, reason: 'Message exceeds maximum length (2000 characters)' };
@@ -133,6 +126,11 @@ const OUTPUT_LEAK_PATTERNS = [
   /process\.env/gi,
 ];
 
+/**
+ * Redacts sensitive system information from the AI's output.
+ * @param {string} text - The raw AI response.
+ * @returns {string} The sanitized response.
+ */
 function sanitizeOutput(text) {
   if (typeof text !== 'string') return text;
 
@@ -147,6 +145,11 @@ function sanitizeOutput(text) {
 // ============================================================
 // 4. CONVERSATION SUMMARIZATION
 // ============================================================
+/**
+ * Summarizes older messages to prevent the prompt context from exceeding limits.
+ * @param {Array<Object>} messages - The array of conversation messages.
+ * @returns {Array<Object>} The compressed message array.
+ */
 function summarizeHistory(messages) {
   if (!messages || messages.length <= 10) return messages;
 
@@ -171,6 +174,11 @@ function summarizeHistory(messages) {
 // ============================================================
 // 5. AUTO LANGUAGE DETECTION (heuristic)
 // ============================================================
+/**
+ * Heuristically detects the language of the user's input.
+ * @param {string} text - The user input.
+ * @returns {string} The 2-letter ISO language code (e.g., 'en', 'es', 'ar').
+ */
 function detectLanguage(text) {
   if (!text) return 'en';
 
@@ -194,6 +202,13 @@ function detectLanguage(text) {
 // ============================================================
 // SYSTEM PROMPT BUILDER
 // ============================================================
+/**
+ * Constructs the system prompt by combining base instructions with real-time stadium data.
+ * @param {string} gatesContext - Formatted gates data.
+ * @param {string} concessionsContext - Formatted concessions data.
+ * @param {string} transportContext - Formatted transportation data.
+ * @returns {string} The final system instruction string.
+ */
 function buildSystemInstruction(gatesContext, concessionsContext, transportContext) {
   let systemPrompt = '';
   const sysPromptPath = path.join(__dirname, 'core_prompts', 'system_instruction.txt');
@@ -233,6 +248,10 @@ Rules:
 }
 
 // Load mock data context strings
+/**
+ * Loads mock real-time data from JSON files.
+ * @returns {{gatesContext: string, concessionsContext: string, transportContext: string}} The loaded data.
+ */
 function loadContextData() {
   let gatesContext, concessionsContext, transportContext;
 
@@ -263,6 +282,11 @@ function loadContextData() {
 // ============================================================
 // MOCK RESPONSE ENGINE
 // ============================================================
+/**
+ * Generates a mock response when the Gemini API key is missing.
+ * @param {string} userMessage - The user input.
+ * @returns {Object} A structured mock response.
+ */
 function getMockResponse(userMessage) {
   const msg = userMessage.toLowerCase();
 
@@ -472,9 +496,14 @@ app.post('/api/chat', rateLimitMiddleware, async (req, res) => {
   }
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`\ud83d\ude80 MetLife Assist server running on http://localhost:${PORT}`);
-  console.log(`\ud83d\udee1\ufe0f  Rate limiter: ${RATE_LIMIT_MAX_REQUESTS} req/${RATE_LIMIT_WINDOW_MS / 1000}s per IP`);
-  console.log(`\ud83e\udde0 Mode: ${ai ? 'LIVE (Gemini API)' : 'MOCK (Demo responses)'}`);
-});
+// Start the server if not imported as a module (for testing)
+const isMainModule = process.argv[1] === fileURLToPath(import.meta.url);
+if (isMainModule) {
+  app.listen(PORT, () => {
+    console.log(`\ud83d\ude80 MetLife Assist server running on http://localhost:${PORT}`);
+    console.log(`\ud83d\udee1\ufe0f  Rate limiter: ${RATE_LIMIT_MAX_REQUESTS} req/${RATE_LIMIT_WINDOW_MS / 1000}s per IP`);
+    console.log(`\ud83e\udde0 Mode: ${ai ? 'LIVE (Gemini API)' : 'MOCK (Demo responses)'}`);
+  });
+}
+
+export default app;
