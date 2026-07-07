@@ -10,6 +10,7 @@ import rateLimit from 'express-rate-limit';
 import compression from 'compression';
 import hpp from 'hpp';
 import apicache from 'apicache';
+import xss from 'xss-clean';
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use(compression());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(hpp());
+app.use(xss());
 // Cache static assets for 1 day to improve Efficiency score
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1d' }));
 

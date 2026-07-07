@@ -1,0 +1,86 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "MetLife Assist API",
+    "description": "API documentation for the MetLife Stadium AI Copilot.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development server"
+    }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "Health check endpoint",
+        "responses": {
+          "200": {
+            "description": "Server is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "mode": {
+                      "type": "string"
+                    },
+                    "timestamp": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stadium-data": {
+      "get": {
+        "summary": "Retrieves live stadium operational data",
+        "responses": {
+          "200": {
+            "description": "Real-time stadium data arrays"
+          }
+        }
+      }
+    },
+    "/api/chat/stream": {
+      "post": {
+        "summary": "Streams AI responses using Server-Sent Events (SSE)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": { "type": "string" },
+                        "content": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "SSE stream containing AI response tokens"
+          }
+        }
+      }
+    }
+  }
+}
