@@ -1,10 +1,10 @@
-# 🏆 MetLife Assist – FIFA World Cup 2026 AI Concierge
+# 🏆 Hack2Skill: MetLife Assist | FIFA World Cup 2026 AI Copilot
 
 ![MetLife Assist](https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/compass.svg)
 
 ## 📌 Problem Statement Alignment
 
-This project directly addresses the challenge of managing crowd flow, safety, and fan experience at massive-scale sporting events—specifically the upcoming FIFA World Cup 2026 at MetLife Stadium.
+**MetLife Assist** is an enterprise-grade, real-time AI concierge built specifically for the **Hack2Skill Hackathon: FIFA World Cup 2026 Crowd Management & Accessibility Challenge**. It optimizes fan experience, accessibility routing, and operational efficiency at MetLife Stadium.
 
 By leveraging generative AI, real-time sensor data, and an accessible interface, **MetLife Assist** ensures that all 82,000+ fans can navigate the stadium safely, efficiently, and inclusively.
 
