@@ -1,202 +1,337 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MetLife Assist | FIFA World Cup 2026 Premium Concierge</title>
-  <meta name="description" content="MetLife Assist - AI-powered premium concierge for FIFA World Cup 2026 at MetLife Stadium. Real-time navigation, transport, accessibility, and crowd management.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Fira+Sans:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <!-- Skip Navigation for Screen Readers -->
-  <a href="#chatBody" class="sr-only sr-focusable">Skip to chat</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MetLife Assist | FIFA World Cup 2026 Premium Concierge</title>
+    <meta
+      name="description"
+      content="MetLife Assist - AI-powered premium concierge for FIFA World Cup 2026 at MetLife Stadium. Real-time navigation, transport, accessibility, and crowd management."
+    />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Fira+Sans:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Skip Navigation for Screen Readers -->
+    <a href="#chatBody" class="sr-only sr-focusable">Skip to chat</a>
 
-  <div class="app-container" role="application" aria-label="MetLife Assist Stadium Concierge">
-    
-    <!-- Top Header -->
-    <header class="app-header" role="banner">
-      <div class="logo-area">
-        <div class="brand-info">
-          <h1>MetLife Assist</h1>
-          <span class="sub-brand">PREMIUM EVENT CONCIERGE &bull; FIFA WORLD Cup 2026</span>
+    <div class="app-container" role="application" aria-label="MetLife Assist Stadium Concierge">
+      <!-- Top Header -->
+      <header class="app-header" role="banner">
+        <div class="logo-area">
+          <div class="brand-info">
+            <h1>MetLife Assist</h1>
+            <span class="sub-brand">PREMIUM EVENT CONCIERGE &bull; FIFA WORLD Cup 2026</span>
+          </div>
+        </div>
+
+        <div class="header-controls">
+          <button
+            id="emergencyToggle"
+            class="btn-icon btn-emergency"
+            title="Emergency Mode"
+            aria-label="Toggle Emergency Alert Mode"
+          >
+            <i data-lucide="siren" class="icon-md"></i>
+            <span class="btn-text">Emergency</span>
+          </button>
+
+          <div class="control-group">
+            <i data-lucide="languages" class="icon-sm"></i>
+            <select id="langSelector" aria-label="Select Language">
+              <option value="en">English</option>
+              <option value="es">Espa&ntilde;ol</option>
+              <option value="fr">Fran&ccedil;ais</option>
+              <option value="de">Deutsch</option>
+              <option value="hi">&#x939;&#x93f;&#x928;&#x94d;&#x926;&#x940;</option>
+              <option value="ar">&#x627;&#x644;&#x639;&#x631;&#x628;&#x64a;&#x629;</option>
+              <option value="pt">Portugu&ecirc;s</option>
+              <option value="ja">&#x65e5;&#x672c;&#x8a9e;</option>
+            </select>
+          </div>
+
+          <button
+            id="accessibilityToggle"
+            class="btn-icon"
+            title="Toggle Accessibility Options"
+            aria-label="Toggle Accessibility Options"
+          >
+            <i data-lucide="accessibility" class="icon-md"></i>
+            <span class="btn-text">Accessible Assist</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Emergency Alert Banner (Hidden by default) -->
+      <div id="emergencyBanner" class="emergency-banner hidden" role="alert" aria-live="assertive">
+        <div class="emergency-banner-content">
+          <i data-lucide="alert-triangle" class="icon-md"></i>
+          <div class="emergency-text">
+            <strong>&#x26a0;&#xfe0f; EMERGENCY EVACUATION ACTIVE</strong>
+            <span
+              >Follow illuminated exits. Gate C (East) is the nearest accessible emergency exit.
+              Stadium staff are directing all fans to safety.</span
+            >
+          </div>
+          <button id="dismissEmergency" class="btn-dismiss" aria-label="Dismiss emergency banner">
+            <i data-lucide="x" class="icon-sm"></i>
+          </button>
         </div>
       </div>
-      
-      <div class="header-controls">
-        <button id="emergencyToggle" class="btn-icon btn-emergency" title="Emergency Mode" aria-label="Toggle Emergency Alert Mode">
-          <i data-lucide="siren" class="icon-md"></i>
-          <span class="btn-text">Emergency</span>
-        </button>
 
-        <div class="control-group">
-          <i data-lucide="languages" class="icon-sm"></i>
-          <select id="langSelector" aria-label="Select Language">
-            <option value="en">English</option>
-            <option value="es">Espa&ntilde;ol</option>
-            <option value="fr">Fran&ccedil;ais</option>
-            <option value="de">Deutsch</option>
-            <option value="hi">&#x939;&#x93f;&#x928;&#x94d;&#x926;&#x940;</option>
-            <option value="ar">&#x627;&#x644;&#x639;&#x631;&#x628;&#x64a;&#x629;</option>
-            <option value="pt">Portugu&ecirc;s</option>
-            <option value="ja">&#x65e5;&#x672c;&#x8a9e;</option>
-          </select>
-        </div>
+      <div class="main-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" aria-label="Stadium Live Status Dashboard" role="complementary">
+          <div class="live-status-header">
+            <span class="live-pulse" aria-hidden="true"></span>
+            <h2>LIVE STADIUM STATUS</h2>
+          </div>
 
-        <button id="accessibilityToggle" class="btn-icon" title="Toggle Accessibility Options" aria-label="Toggle Accessibility Options">
-          <i data-lucide="accessibility" class="icon-md"></i>
-          <span class="btn-text">Accessible Assist</span>
-        </button>
-      </div>
-    </header>
-
-    <!-- Emergency Alert Banner (Hidden by default) -->
-    <div id="emergencyBanner" class="emergency-banner hidden" role="alert" aria-live="assertive">
-      <div class="emergency-banner-content">
-        <i data-lucide="alert-triangle" class="icon-md"></i>
-        <div class="emergency-text">
-          <strong>&#x26a0;&#xfe0f; EMERGENCY EVACUATION ACTIVE</strong>
-          <span>Follow illuminated exits. Gate C (East) is the nearest accessible emergency exit. Stadium staff are directing all fans to safety.</span>
-        </div>
-        <button id="dismissEmergency" class="btn-dismiss" aria-label="Dismiss emergency banner">
-          <i data-lucide="x" class="icon-sm"></i>
-        </button>
-      </div>
-    </div>
-
-    <div class="main-layout">
-      <!-- Sidebar -->
-      <aside class="sidebar" aria-label="Stadium Live Status Dashboard" role="complementary">
-        
-        <div class="live-status-header">
-          <span class="live-pulse" aria-hidden="true"></span>
-          <h2>LIVE STADIUM STATUS</h2>
-        </div>
-
-        <!-- Match Countdown -->
-        <section class="sidebar-widget widget-countdown" aria-label="Match countdown timer">
-          <h3><i data-lucide="timer" class="icon-accent"></i> Match Status</h3>
-          <div id="matchStatusWidget" class="match-status-display">
-            <div class="match-teams">
-              <div class="team"><span class="team-flag">&#x1f1fa;&#x1f1f8;</span><span class="team-name">USA</span><span class="team-score" id="homeScore">0</span></div>
-              <div class="match-center"><span class="match-vs">VS</span><span class="match-timer" id="matchTimer">PRE-MATCH</span></div>
-              <div class="team"><span class="team-flag">&#x1f1e7;&#x1f1f7;</span><span class="team-name">BRA</span><span class="team-score" id="awayScore">0</span></div>
+          <!-- Match Countdown -->
+          <section class="sidebar-widget widget-countdown" aria-label="Match countdown timer">
+            <h3><i data-lucide="timer" class="icon-accent"></i> Match Status</h3>
+            <div id="matchStatusWidget" class="match-status-display">
+              <div class="match-teams">
+                <div class="team">
+                  <span class="team-flag">&#x1f1fa;&#x1f1f8;</span><span class="team-name">USA</span
+                  ><span class="team-score" id="homeScore">0</span>
+                </div>
+                <div class="match-center">
+                  <span class="match-vs">VS</span
+                  ><span class="match-timer" id="matchTimer">PRE-MATCH</span>
+                </div>
+                <div class="team">
+                  <span class="team-flag">&#x1f1e7;&#x1f1f7;</span><span class="team-name">BRA</span
+                  ><span class="team-score" id="awayScore">0</span>
+                </div>
+              </div>
+              <div class="match-countdown" id="matchCountdown">
+                <div class="countdown-item">
+                  <span class="cd-value" id="cdHours">01</span><span class="cd-label">HRS</span>
+                </div>
+                <div class="countdown-sep">:</div>
+                <div class="countdown-item">
+                  <span class="cd-value" id="cdMinutes">24</span><span class="cd-label">MIN</span>
+                </div>
+                <div class="countdown-sep">:</div>
+                <div class="countdown-item">
+                  <span class="cd-value" id="cdSeconds">58</span><span class="cd-label">SEC</span>
+                </div>
+              </div>
+              <span class="match-info"
+                >Group Stage &bull; Match Day 2 &bull; Kickoff 7:00 PM ET</span
+              >
             </div>
-            <div class="match-countdown" id="matchCountdown">
-              <div class="countdown-item"><span class="cd-value" id="cdHours">01</span><span class="cd-label">HRS</span></div>
-              <div class="countdown-sep">:</div>
-              <div class="countdown-item"><span class="cd-value" id="cdMinutes">24</span><span class="cd-label">MIN</span></div>
-              <div class="countdown-sep">:</div>
-              <div class="countdown-item"><span class="cd-value" id="cdSeconds">58</span><span class="cd-label">SEC</span></div>
+          </section>
+
+          <!-- Crowd Density Heatmap -->
+          <section class="sidebar-widget widget-heatmap" aria-label="Crowd density heatmap">
+            <h3><i data-lucide="activity" class="icon-accent"></i> Crowd Density</h3>
+            <div class="heatmap-container">
+              <div
+                class="heatmap-grid"
+                role="img"
+                aria-label="Stadium crowd density grid showing occupancy percentages by zone"
+              >
+                <div class="heatmap-zone zone-nw" data-zone="NW" data-density="72">
+                  <span class="zone-label">NW</span><span class="zone-pct">72%</span>
+                </div>
+                <div class="heatmap-zone zone-n" data-zone="N" data-density="88">
+                  <span class="zone-label">N</span><span class="zone-pct">88%</span>
+                </div>
+                <div class="heatmap-zone zone-ne" data-zone="NE" data-density="45">
+                  <span class="zone-label">NE</span><span class="zone-pct">45%</span>
+                </div>
+                <div class="heatmap-zone zone-w" data-zone="W" data-density="60">
+                  <span class="zone-label">W</span><span class="zone-pct">60%</span>
+                </div>
+                <div class="heatmap-zone zone-center" data-zone="PITCH" data-density="0">
+                  <span class="zone-label">&#x26bd;</span>
+                </div>
+                <div class="heatmap-zone zone-e" data-zone="E" data-density="33">
+                  <span class="zone-label">E</span><span class="zone-pct">33%</span>
+                </div>
+                <div class="heatmap-zone zone-sw" data-zone="SW" data-density="55">
+                  <span class="zone-label">SW</span><span class="zone-pct">55%</span>
+                </div>
+                <div class="heatmap-zone zone-s" data-zone="S" data-density="40">
+                  <span class="zone-label">S</span><span class="zone-pct">40%</span>
+                </div>
+                <div class="heatmap-zone zone-se" data-zone="SE" data-density="65">
+                  <span class="zone-label">SE</span><span class="zone-pct">65%</span>
+                </div>
+              </div>
+              <div class="heatmap-legend">
+                <span class="hl-low"></span><span>Low</span><span class="hl-mid"></span
+                ><span>Med</span><span class="hl-high"></span><span>High</span>
+              </div>
             </div>
-            <span class="match-info">Group Stage &bull; Match Day 2 &bull; Kickoff 7:00 PM ET</span>
-          </div>
-        </section>
+          </section>
 
-        <!-- Crowd Density Heatmap -->
-        <section class="sidebar-widget widget-heatmap" aria-label="Crowd density heatmap">
-          <h3><i data-lucide="activity" class="icon-accent"></i> Crowd Density</h3>
-          <div class="heatmap-container">
-            <div class="heatmap-grid" role="img" aria-label="Stadium crowd density grid showing occupancy percentages by zone">
-              <div class="heatmap-zone zone-nw" data-zone="NW" data-density="72"><span class="zone-label">NW</span><span class="zone-pct">72%</span></div>
-              <div class="heatmap-zone zone-n" data-zone="N" data-density="88"><span class="zone-label">N</span><span class="zone-pct">88%</span></div>
-              <div class="heatmap-zone zone-ne" data-zone="NE" data-density="45"><span class="zone-label">NE</span><span class="zone-pct">45%</span></div>
-              <div class="heatmap-zone zone-w" data-zone="W" data-density="60"><span class="zone-label">W</span><span class="zone-pct">60%</span></div>
-              <div class="heatmap-zone zone-center" data-zone="PITCH" data-density="0"><span class="zone-label">&#x26bd;</span></div>
-              <div class="heatmap-zone zone-e" data-zone="E" data-density="33"><span class="zone-label">E</span><span class="zone-pct">33%</span></div>
-              <div class="heatmap-zone zone-sw" data-zone="SW" data-density="55"><span class="zone-label">SW</span><span class="zone-pct">55%</span></div>
-              <div class="heatmap-zone zone-s" data-zone="S" data-density="40"><span class="zone-label">S</span><span class="zone-pct">40%</span></div>
-              <div class="heatmap-zone zone-se" data-zone="SE" data-density="65"><span class="zone-label">SE</span><span class="zone-pct">65%</span></div>
+          <!-- Transportation -->
+          <section class="sidebar-widget" aria-label="Live transportation status">
+            <h3><i data-lucide="train-front" class="icon-accent"></i> Live Transportation</h3>
+            <div id="transportStatusContainer" class="widget-list" aria-live="polite">
+              <div class="loading-shimmer"></div>
             </div>
-            <div class="heatmap-legend"><span class="hl-low"></span><span>Low</span><span class="hl-mid"></span><span>Med</span><span class="hl-high"></span><span>High</span></div>
+          </section>
+
+          <!-- Concessions -->
+          <section class="sidebar-widget" aria-label="Concession queue times">
+            <h3><i data-lucide="utensils" class="icon-accent"></i> Concession Queue Times</h3>
+            <div id="concessionStatusContainer" class="widget-list" aria-live="polite">
+              <div class="loading-shimmer"></div>
+            </div>
+          </section>
+
+          <!-- Accessibility Panel (Hidden) -->
+          <section
+            id="accessibilityPanel"
+            class="sidebar-widget widget-accessibility hidden"
+            aria-label="Accessibility quick actions"
+          >
+            <div class="accessibility-banner">
+              <i data-lucide="info" class="icon-md"></i>
+              <div>
+                <h4>Accessibility Mode Active</h4>
+                <p>Step-free routes, elevators, and sensory room locations are highlighted.</p>
+              </div>
+            </div>
+            <div class="acc-actions">
+              <button
+                class="btn-acc-chip"
+                data-query="List all step-free elevator locations near Section 120"
+              >
+                &#x267f; Near Section 120
+              </button>
+              <button
+                class="btn-acc-chip"
+                data-query="How do I access the sensory room in Section 212?"
+              >
+                &#x2605; Sensory Room Help
+              </button>
+              <button class="btn-acc-chip" data-query="Which gate is best for wheelchair loading?">
+                &#x1f697; Accessible Drop-off
+              </button>
+            </div>
+          </section>
+        </aside>
+
+        <!-- Chat -->
+        <main class="chat-wrapper" role="main">
+          <div
+            id="accessibilityHeaderBanner"
+            class="accessibility-header-banner hidden"
+            role="status"
+          >
+            <i data-lucide="accessibility" class="icon-md"></i>
+            <span
+              >MetLife Assist is prioritizing accessible paths, ramps, elevators, and quiet
+              zones.</span
+            >
           </div>
-        </section>
 
-        <!-- Transportation -->
-        <section class="sidebar-widget" aria-label="Live transportation status">
-          <h3><i data-lucide="train-front" class="icon-accent"></i> Live Transportation</h3>
-          <div id="transportStatusContainer" class="widget-list" aria-live="polite"><div class="loading-shimmer"></div></div>
-        </section>
-
-        <!-- Concessions -->
-        <section class="sidebar-widget" aria-label="Concession queue times">
-          <h3><i data-lucide="utensils" class="icon-accent"></i> Concession Queue Times</h3>
-          <div id="concessionStatusContainer" class="widget-list" aria-live="polite"><div class="loading-shimmer"></div></div>
-        </section>
-
-        <!-- Accessibility Panel (Hidden) -->
-        <section id="accessibilityPanel" class="sidebar-widget widget-accessibility hidden" aria-label="Accessibility quick actions">
-          <div class="accessibility-banner">
-            <i data-lucide="info" class="icon-md"></i>
-            <div><h4>Accessibility Mode Active</h4><p>Step-free routes, elevators, and sensory room locations are highlighted.</p></div>
-          </div>
-          <div class="acc-actions">
-            <button class="btn-acc-chip" data-query="List all step-free elevator locations near Section 120">&#x267f; Near Section 120</button>
-            <button class="btn-acc-chip" data-query="How do I access the sensory room in Section 212?">&#x2605; Sensory Room Help</button>
-            <button class="btn-acc-chip" data-query="Which gate is best for wheelchair loading?">&#x1f697; Accessible Drop-off</button>
-          </div>
-        </section>
-        
-      </aside>
-
-      <!-- Chat -->
-      <main class="chat-wrapper" role="main">
-        
-        <div id="accessibilityHeaderBanner" class="accessibility-header-banner hidden" role="status">
-          <i data-lucide="accessibility" class="icon-md"></i>
-          <span>MetLife Assist is prioritizing accessible paths, ramps, elevators, and quiet zones.</span>
-        </div>
-
-        <div class="chat-container">
-          <!-- Chat Messages Body with ARIA live region -->
-          <div class="chat-body" id="chatBody" role="log" aria-live="polite" aria-label="Chat conversation">
-            
-            <div class="message bot-message" style="opacity:1">
-              <div class="message-avatar"><i data-lucide="compass" class="avatar-icon"></i></div>
-              <div class="message-content">
-                <p>Welcome to MetLife Stadium for the <strong>FIFA World Cup 2026</strong>! &#x1f3df;&#xfe0f;&#x26bd;</p>
-                <p>I am <strong>MetLife Assist</strong>, your premium event concierge. I can guide you through stadium gates, locate accessible elevators, check live transportation status, or find the concession lines with the shortest wait times.</p>
-                <p>How can I assist you with your match-day experience today?</p>
-                <span class="message-time">11:10 AM</span>
+          <div class="chat-container">
+            <!-- Chat Messages Body with ARIA live region -->
+            <div
+              class="chat-body"
+              id="chatBody"
+              role="log"
+              aria-live="polite"
+              aria-label="Chat conversation"
+            >
+              <div class="message bot-message" style="opacity: 1">
+                <div class="message-avatar"><i data-lucide="compass" class="avatar-icon"></i></div>
+                <div class="message-content">
+                  <p>
+                    Welcome to MetLife Stadium for the <strong>FIFA World Cup 2026</strong>!
+                    &#x1f3df;&#xfe0f;&#x26bd;
+                  </p>
+                  <p>
+                    I am <strong>MetLife Assist</strong>, your premium event concierge. I can guide
+                    you through stadium gates, locate accessible elevators, check live
+                    transportation status, or find the concession lines with the shortest wait
+                    times.
+                  </p>
+                  <p>How can I assist you with your match-day experience today?</p>
+                  <span class="message-time">11:10 AM</span>
+                </div>
               </div>
             </div>
 
-          </div>
+            <!-- ARIA live region for screen reader announcements -->
+            <div id="srAnnouncer" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
 
-          <!-- ARIA live region for screen reader announcements -->
-          <div id="srAnnouncer" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
-
-          <!-- Suggestion Chips -->
-          <div class="suggestion-chips" role="toolbar" aria-label="Quick action suggestions">
-            <button class="chip" data-query="Which gate currently has the shortest line?"><i data-lucide="sparkles" class="chip-icon"></i> Shortest Gate Line</button>
-            <button class="chip" data-query="Where is the Sensory Room located?"><i data-lucide="shield" class="chip-icon"></i> Sensory Room</button>
-            <button class="chip" data-query="What is the fastest way to travel back to New York Penn Station?"><i data-lucide="train-front" class="chip-icon"></i> Train Schedule</button>
-            <button class="chip" data-query="Find burgers with a short wait time"><i data-lucide="utensils" class="chip-icon"></i> Short Burger Lines</button>
-            <button class="chip" data-query="Show me the crowd density right now"><i data-lucide="activity" class="chip-icon"></i> Crowd Density</button>
-          </div>
-
-          <!-- Chat Input -->
-          <footer class="chat-input-container">
-            <form id="chatForm" role="search" aria-label="Send a message to MetLife Assist">
-              <button type="button" id="voiceBtn" class="voice-btn" title="Voice assistance (Mocked)" aria-label="Voice input">
-                <span class="mic-pulse"></span>
-                <i data-lucide="mic" class="mic-icon"></i>
+            <!-- Suggestion Chips -->
+            <div class="suggestion-chips" role="toolbar" aria-label="Quick action suggestions">
+              <button class="chip" data-query="Which gate currently has the shortest line?">
+                <i data-lucide="sparkles" class="chip-icon"></i> Shortest Gate Line
               </button>
-              <input type="text" id="userInput" placeholder="Ask about gate wait times, elevators, concessions, transit..." autocomplete="off" required aria-label="Type your question" />
-              <button type="submit" id="sendBtn" class="send-btn" aria-label="Send message">
-                <i data-lucide="send" class="send-icon"></i>
+              <button class="chip" data-query="Where is the Sensory Room located?">
+                <i data-lucide="shield" class="chip-icon"></i> Sensory Room
               </button>
-            </form>
-          </footer>
-        </div>
-      </main>
+              <button
+                class="chip"
+                data-query="What is the fastest way to travel back to New York Penn Station?"
+              >
+                <i data-lucide="train-front" class="chip-icon"></i> Train Schedule
+              </button>
+              <button class="chip" data-query="Find burgers with a short wait time">
+                <i data-lucide="utensils" class="chip-icon"></i> Short Burger Lines
+              </button>
+              <button class="chip" data-query="Show me the crowd density right now">
+                <i data-lucide="activity" class="chip-icon"></i> Crowd Density
+              </button>
+            </div>
+
+            <!-- Chat Input -->
+            <footer class="chat-input-container">
+              <form id="chatForm" role="search" aria-label="Send a message to MetLife Assist">
+                <button
+                  type="button"
+                  id="voiceBtn"
+                  class="voice-btn"
+                  title="Voice assistance (Mocked)"
+                  aria-label="Voice input"
+                >
+                  <span class="mic-pulse"></span>
+                  <i data-lucide="mic" class="mic-icon"></i>
+                </button>
+                <input
+                  type="text"
+                  id="userInput"
+                  placeholder="Ask about gate wait times, elevators, concessions, transit..."
+                  autocomplete="off"
+                  required
+                  aria-label="Type your question"
+                />
+                <button type="submit" id="sendBtn" class="send-btn" aria-label="Send message">
+                  <i data-lucide="send" class="send-icon"></i>
+                </button>
+              </form>
+            </footer>
+          </div>
+        </main>
+      </div>
     </div>
-  </div>
 
-  <script src="app.js"></script>
-</body>
+    <script src="app.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch((err) => {
+            console.warn('SW registration failed:', err);
+          });
+        });
+      }
+    </script>
+  </body>
 </html>
