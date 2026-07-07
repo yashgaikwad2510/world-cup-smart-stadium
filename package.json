@@ -1,7 +1,7 @@
 {
   "name": "world-cup-smart-stadium",
   "version": "1.0.0",
-  "description": "Hack2Skill FIFA World Cup 2026 AI Copilot for MetLife Stadium. Provides live crowd management, accessibility routing, and concession efficiency tracking for the ultimate fan experience.",
+  "description": "MetLife Assist Copilot for FIFA World Cup 2026",
   "type": "module",
   "main": "server.js",
   "scripts": {
