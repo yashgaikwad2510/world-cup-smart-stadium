@@ -62,12 +62,11 @@ function runGSAPEntranceAnimations() {
     ease: "power4.out"
   });
 
-  // Sidebar widgets slide in from left
-  tl.from(".sidebar-widget, .live-status-header", {
-    x: -50,
+  // Sidebar header slides in from left
+  tl.from(".live-status-header", {
+    x: -30,
     opacity: 0,
-    duration: 0.6,
-    stagger: 0.12,
+    duration: 0.5,
     ease: "power2.out"
   }, "-=0.4");
 
