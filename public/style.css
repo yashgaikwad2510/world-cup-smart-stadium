@@ -22,8 +22,9 @@
   --glass-bg: rgba(10, 10, 12, 0.85);
   --glass-border: rgba(255, 255, 255, 0.05);
   
-  --font-header: 'Outfit', sans-serif;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-header: "Rijksoverheid Sans", "Fira Sans", 'Outfit', sans-serif;
+  --font-body: "Rijksoverheid Sans", "Fira Sans", 'Plus Jakarta Sans', sans-serif;
+  --font-matrix: "Nono", "DotGothic16", monospace;
 
   --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   --radius-sm: 8px;
@@ -117,6 +118,7 @@ h1, h2, h3, h4 {
 }
 
 .sub-brand {
+  font-family: var(--font-matrix);
   font-size: 0.7rem;
   color: var(--text-muted);
   font-weight: 600;
@@ -244,6 +246,7 @@ h1, h2, h3, h4 {
 }
 
 .live-status-header h2 {
+  font-family: var(--font-matrix);
   font-size: 0.95rem;
   letter-spacing: 0.08em;
   color: var(--text-muted);
@@ -320,6 +323,7 @@ h1, h2, h3, h4 {
 }
 
 .status-badge {
+  font-family: var(--font-matrix);
   font-size: 0.7rem;
   padding: 0.2rem 0.5rem;
   border-radius: 50px;
@@ -419,6 +423,7 @@ h1, h2, h3, h4 {
 }
 
 .pitch-text {
+  font-family: var(--font-matrix);
   font-size: 0.55rem;
   color: #ffffff;
   font-weight: 800;
@@ -427,6 +432,7 @@ h1, h2, h3, h4 {
 
 /* Map Pointer Anchors */
 .map-pointer {
+  font-family: var(--font-matrix);
   position: absolute;
   width: 18px;
   height: 18px;
